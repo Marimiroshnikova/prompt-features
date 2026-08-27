@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.tiktoken/
+
+# generated artifacts
+reports/
+shots/
+data/*_enriched.csv
+
+# internal working notes, not part of the deliverable
+handoff.txt

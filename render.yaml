@@ -1,0 +1,25 @@
+# Render blueprint. Point Render at this repo and it reads this file:
+# render.com/docs/infrastructure-as-code
+services:
+  - type: web
+    name: prompt-features
+    runtime: python
+    plan: free
+    # Render sets PORT itself; HOST must be 0.0.0.0 to accept outside traffic.
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: MAX_PROMPT_CHARS
+        value: 20000
+      # tiktoken downloads its vocabulary on first use. Cache it inside the
+      # project during the build so the running service never needs egress.
+      - key: TIKTOKEN_CACHE_DIR
+        value: /opt/render/project/src/.tiktoken
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -c "import tiktoken; tiktoken.get_encoding('cl100k_base')"
+    startCommand: python app.py
+    healthCheckPath: /api/health

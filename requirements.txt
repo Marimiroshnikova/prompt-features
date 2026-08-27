@@ -1,0 +1,16 @@
+# Feature backends
+spacy>=3.7,<4.0
+wordfreq>=3.0,<4.0
+langdetect==1.0.9
+textstat>=0.7,<0.8
+tiktoken>=0.7,<1.0
+
+# The spaCy English model, for named entities, part-of-speech tags and the
+# dependency parse. It is not published on PyPI under a normal name, so it is
+# pinned here by URL to keep `pip install -r requirements.txt` a single step.
+# Equivalent to: python -m spacy download en_core_web_sm
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
+# Used only by enrich.py, for the CSV in / CSV out workflow. The web app and
+# the feature code itself never import it.
+pandas>=2.0,<3.0
