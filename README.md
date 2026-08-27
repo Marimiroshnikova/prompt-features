@@ -12,6 +12,10 @@ Every feature has to satisfy one rule:
 
 > If this value is high or true, retrieval is more likely to fail, because ...
 
+**Try it: [prompt-features.onrender.com](https://prompt-features.onrender.com/)**
+— type a prompt and click any feature to see how its value was reached. It is on
+a free instance, so the first load after a quiet period takes a moment to wake.
+
 ![The ranked feature list](docs/ui-top30.png)
 
 ## Why prompt-only features
@@ -48,7 +52,7 @@ failure.
 
 ![An expanded calculation](docs/ui-expanded.png)
 
-## Quick start
+## Running it locally
 
 Requires Python 3.10 or newer.
 
@@ -208,45 +212,21 @@ Measured on one machine, Python 3.10, all backends loaded:
 Cost is linear in prompt length. Hosted deployments cap the prompt at
 `MAX_PROMPT_CHARS` (default 20 000) so one large paste cannot tie up the server.
 
-## Deploying
+## Deployment
 
-### Render (recommended)
+Live at **[prompt-features.onrender.com](https://prompt-features.onrender.com/)**,
+running on Render from `render.yaml` in this repo. A push to `main` redeploys.
 
-`render.yaml` is a blueprint: create a Blueprint service pointing at this repo
-and Render reads it. It installs the dependencies, pre-caches the tiktoken
-vocabulary during the build, binds `0.0.0.0:$PORT`, warms the models before
-serving, and health-checks `/api/health`.
+The instance is on Render's free tier, which sleeps after inactivity, so the
+first request after a quiet period waits for a cold start. Warm it with one
+request before a demo.
 
-The free instance type has 512 MB of memory and the service uses 326 MB, so it
-fits with headroom, but a free instance sleeps after inactivity and the first
-request after a sleep waits for the cold start. Use a paid instance if the team
-will hit it regularly.
-
-### Docker, for anywhere else
+To run the same image anywhere else:
 
 ```bash
 docker build -t prompt-features .
 docker run -p 8765:8765 prompt-features
 ```
-
-The image is built and smoke-tested; the container reports every backend loaded
-and passes all API checks.
-
-### GitHub Pages will not work
-
-Pages serves static files only. Every feature value is computed at request time
-by Python, using the spaCy parser and NER, so there is no server to run the
-analysis. Publishing only the docs to Pages is fine; the app itself needs a
-Python host.
-
-### Vercel does not fit either
-
-Vercel's Hobby serverless functions allow 250 MB unzipped. The dependencies are
-406 MB, of which spaCy is 102 MB and wordfreq 60 MB. Trimming to fit would mean
-dropping the spaCy model, which disables the 26 features that need a parse, NER
-or part-of-speech tags.
-
-Configuration, for any host:
 
 | variable | default | purpose |
 | --- | --- | --- |
