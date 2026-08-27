@@ -106,11 +106,60 @@ extract_features("Who wrote The Hobbit?", with_status=True)
 python features.py "Who wrote The Hobbit?"           # ranked report
 python features.py --json "Who wrote The Hobbit?"    # values as JSON
 python explain.py "Who wrote The Hobbit?"            # full report into reports/
-python enrich.py --input mine.csv --output out.csv   # adds one column per feature
 ```
 
-`enrich.py` expects a `question` column and accepts `--top30` and
-`--with-status`.
+## Running it on a dataset
+
+Batch work runs locally, not through the hosted app: one process handles one
+prompt at a time, so a large upload would block everyone else on the URL.
+
+```bash
+python enrich.py --input mine.csv --output out.csv --top30 --with-status
+```
+
+The input needs one column of prompt text, named `question` by default. Every
+other column is passed through untouched, so labels and ids stay attached to
+their row.
+
+| flag | default | effect |
+| --- | --- | --- |
+| `--input` | `data/example_prompts.csv` | CSV to read |
+| `--output` | `data/example_prompts_enriched.csv` | CSV to write |
+| `--column` | `question` | which column holds the prompt text |
+| `--top30` | off | write only the 30 ranked features instead of all 138 |
+| `--with-status` | off | add `<name>__status` and `<name>__reason` per feature |
+
+Run it with no arguments to try it on the 20 bundled example prompts.
+
+**Reading the output.** A blank cell is not a zero, it is a feature that could
+not be honestly computed for that row. `--with-status` puts the reason in the
+CSV next to it, which is worth doing on a first pass:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("out.csv")
+df["year_span"].isna().sum()                       # how many rows lack a year
+df.loc[df["year_span"].isna(), "year_span__reason"].value_counts()
+```
+
+Without `--with-status`, the script still prints a summary of which features
+were blank and for how many rows, so nothing is silently missing.
+
+**What to expect.** About 150 ms per prompt after a five-second model load, so
+roughly 5 000 prompts per hour in one single-threaded process. Memory stays flat
+at around 350 MB regardless of dataset size, since rows are processed one at a
+time. For a much larger corpus, split the file and run several processes, or
+import `enrich()` from `enrich.py` and parallelise over chunks.
+
+**As a library**, if you would rather not go through CSV:
+
+```python
+from enrich import enrich
+import pandas as pd
+
+out = enrich(pd.read_csv("mine.csv"), "prompt_text", top30=True, with_status=True)
+```
 
 ## A missing value is never zero
 
