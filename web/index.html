@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Prompt features</title>
-<link rel="stylesheet" href="/styles.css" />
+<title>Prompt features — 3 groups</title>
+<link rel="stylesheet" href="/styles.css?v=3groups" />
 </head>
 <body>
 <header class="topbar">
@@ -43,13 +43,13 @@
     <p id="error" class="error" hidden></p>
   </section>
 
-  <section id="results" class="results" hidden>
+  <section id="results" class="results">
     <div class="summary" id="summary"></div>
 
     <div class="toolbar">
       <div class="tabs">
-        <button class="tab active" data-view="top">Top 30</button>
-        <button class="tab" data-view="plan">3 groups</button>
+        <button class="tab active" data-view="plan">3 groups</button>
+        <button class="tab" data-view="top">Top 30</button>
         <button class="tab" data-view="all">All features</button>
         <button class="tab" data-view="issues">Not computed</button>
       </div>
@@ -61,11 +61,9 @@
     <div id="feature-list"></div>
   </section>
 
-  <section id="empty" class="empty">
-    <p>Every number is computed from the prompt text, and can be expanded to show how it was reached. <strong>3 groups</strong> is Prompt, Model, and Interaction. Pick a model to also see the <strong>baseline</strong>: that model's miss rate on the 280-question grid.</p>
-  </section>
+  <section id="empty" class="empty" hidden></section>
 </main>
 
-<script src="/app.js"></script>
+<script src="/app.js?v=3groups"></script>
 </body>
 </html>

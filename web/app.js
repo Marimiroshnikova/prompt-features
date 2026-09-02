@@ -3,7 +3,7 @@
 const state = {
   schema: null,
   report: null,
-  view: "top",
+  view: "plan",
   filter: "",
   onlyActive: false,
   model: "",
@@ -54,6 +54,7 @@ async function boot() {
     el("category").value = category;
   }
   const initial = shared !== null ? shared : sessionStorage.getItem("prompt");
+  renderList();
   if (initial) {
     el("prompt").value = initial;
     run();
@@ -203,8 +204,6 @@ async function run() {
   try {
     const res = await postJson("/api/explain", prompt);
     state.report = await res.json();
-    el("empty").hidden = true;
-    el("results").hidden = false;
     renderSummary();
     renderList();
   } catch (err) {
@@ -278,11 +277,42 @@ function matchesFilter(f) {
   );
 }
 
+function catalogRow(decl) {
+  const live = state.report && (state.report.features || []).find((f) => f.name === decl.name);
+  if (live) return live;
+  return {
+    ...decl,
+    value: null,
+    display_value: "—",
+    status: "ok",
+    reason: "",
+    steps: [],
+    spans: [],
+    lexicon_hits: [],
+  };
+}
+
+function promptGroupSections() {
+  const decls = Object.fromEntries((state.schema.features || []).map((f) => [f.name, f]));
+  const groups = (state.report && state.report.groups) || state.schema.groups || [];
+  return groups.map((group) => {
+    const names = (group.features || []).map((f) => (typeof f === "string" ? f : f.name));
+    const members = names.map((name) => catalogRow(decls[name] || { name, summary: "" }));
+    return {
+      key: group.key,
+      title: group.title,
+      blurb: group.blurb,
+      features: members,
+    };
+  });
+}
+
 function visibleFeatures() {
   let list;
-  if (state.view === "top") list = state.report.top;
+  if (state.view === "plan") list = planVisibleFeatures();
+  else if (!state.report) list = (state.schema.features || []).map(catalogRow);
+  else if (state.view === "top") list = state.report.top;
   else if (state.view === "issues") list = state.report.features.filter((f) => f.status !== "ok");
-  else if (state.view === "plan") list = planVisibleFeatures();
   else list = state.report.features;
   return list.filter((f) => matchesFilter(f) && (!state.onlyActive || isActive(f) || f.status !== "ok"));
 }
@@ -419,7 +449,7 @@ function interactionRows() {
 }
 
 function planVisibleFeatures() {
-  const prompt = state.report.features || [];
+  const prompt = promptGroupSections().flatMap((g) => g.features);
   return [...prompt, ...modelRows(), ...interactionRows()];
 }
 
@@ -477,7 +507,7 @@ function renderPlanGroups() {
   return plans
     .map((plan) => {
       if (plan.key === "prompt") {
-        const inner = (state.report.groups || [])
+        const inner = promptGroupSections()
           .map((group) => {
             const members = group.features.filter((f) => wanted.has(f.name));
             if (!members.length) return "";
@@ -488,7 +518,7 @@ function renderPlanGroups() {
           .join("");
         if (!inner) return "";
         return `<section class="group plan-group">
-            <h2>1. ${escapeHtml(plan.title)}</h2>
+            <h2>1. Prompt</h2>
             <p class="blurb">${escapeHtml(plan.blurb)}</p>
             ${inner}
           </section>`;
@@ -513,17 +543,20 @@ function renderPlanGroups() {
 }
 
 function renderList() {
-  if (!state.report) return;
+  if (!state.schema) return;
   const features = visibleFeatures();
   const host = el("feature-list");
 
   if (state.view === "plan") {
     host.innerHTML = baselineCardHtml() + renderPlanGroups();
   } else if (!features.length) {
-    host.innerHTML = `<div class="rows"><div class="nothing">No features match this filter.</div></div>`;
+    const msg = !state.report && (state.view === "top" || state.view === "issues")
+      ? "Extract a prompt to fill this list."
+      : "No features match this filter.";
+    host.innerHTML = `<div class="rows"><div class="nothing">${msg}</div></div>`;
   } else if (state.view === "all") {
     const wanted = new Set(features.map((f) => f.name));
-    host.innerHTML = state.report.groups
+    host.innerHTML = promptGroupSections()
       .map((group) => {
         const members = group.features.filter((f) => wanted.has(f.name));
         if (!members.length) return "";
@@ -626,7 +659,7 @@ function detailHtml(f) {
     parts.push(`<h4>Calculation for this prompt</h4><ol class="steps">${f.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>`);
   }
 
-  if (f.spans && f.spans.length) {
+  if (f.spans && f.spans.length && state.report) {
     parts.push(`<h4>Matched text in the prompt</h4><div class="matched">${highlight(state.report.normalized, f.spans)}</div>`);
   }
 
