@@ -1,0 +1,50 @@
+==============================================================================
+ReaLMistake, error target, confounds removed step by step
+==============================================================================
+
+Why: ReaLMistake ships an easy/difficult prompt-template variant that
+some features decode exactly. Inside two of the three tasks,
+f_instruction_line_count separates easy from difficult at AUC 1.000, so
+the pooled numbers partly measure template recognition.
+
+stratum counts:
+  answerability_classification|difficult           n=232   error rate 0.767
+  answerability_classification|easy                n=68    error rate 0.574
+  finegrained_fact_verification|difficult          n=246   error rate 0.813
+  finegrained_fact_verification|easy               n=54    error rate 0.315
+  math_problem_generation|difficult                n=240   error rate 0.842
+  math_problem_generation|easy                     n=60    error rate 0.217
+
+                                                 prompt feats    length only   null p95
+level 1  pooled                                         0.685          0.616      0.547
+level 2  within task                                    0.675          0.703      0.533
+level 3  within task x easy/difficult variant           0.563          0.555      0.536
+
+------------------------------------------------------------------------------
+Per-task detail (error target, prompt features only, grouped CV)
+------------------------------------------------------------------------------
+  answerability_classification       n=300   prompt feats 0.577   length only 0.636
+  finegrained_fact_verification      n=300   prompt feats 0.685   length only 0.670
+  math_problem_generation            n=300   prompt feats 0.762   length only 0.802
+
+------------------------------------------------------------------------------
+Univariate AUC for the error target, computed inside task x variant
+strata and pooled by weighted mean (so template recognition cannot
+contribute). Features that stay away from 0.500 here are real.
+------------------------------------------------------------------------------
+feature                                     within-stratum AUC  strata
+f_year_max                                               0.607       3
+f_context_token_count                                    0.604       5
+f_temporal_expression_count                              0.599       5
+f_content_word_count                                     0.596       5
+f_question_length_chars                                  0.590       5
+f_has_date_like                                          0.587       2
+f_avg_words_per_sentence                                 0.587       5
+f_instruction_char_ratio                                 0.414       5
+f_entity_count                                           0.582       5
+f_question_length_words                                  0.582       5
+f_retrieval_difficulty_score                             0.577       5
+f_max_parse_depth                                        0.566       5
+f_tokens_per_word                                        0.565       5
+f_anchor_count                                           0.565       5
+f_numeral_count                                          0.561       5

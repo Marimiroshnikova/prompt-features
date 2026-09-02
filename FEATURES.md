@@ -35,10 +35,10 @@ because a zero would teach a downstream model something false.
 
 | backend | available | version | used for |
 | --- | --- | --- | --- |
-| `spacy` | yes | 3.8.16 | entities, POS tags, sentences, dependency parse |
+| `spacy` | yes | 3.8.7 | entities, POS tags, sentences, dependency parse |
 | `wordfreq` | yes | 3.1.1 | Zipf word frequencies |
 | `langdetect` | yes | 1.0.9 | language identification |
-| `tiktoken` | yes | 0.14.0 | BPE token counts |
+| `tiktoken` | yes | 0.13.0 | BPE token counts |
 | `textstat` | yes | 0.7.13 | readability formulas and syllable counts |
 
 A missing backend never breaks extraction: the features that depend on it return `None` with status `unavailable` and an install hint.
@@ -82,7 +82,7 @@ Ranked by expected power to predict retrieval failure, chosen to cover distinct 
 
 ## All features by group
 
-138 features in 11 groups.
+149 features in 12 groups.
 
 - **Size and shape** (15): `question_length_chars`, `question_length_words`, `context_token_count`, `n_sentences`, `n_lines`, `n_clauses`, `avg_words_per_sentence`, `avg_chars_per_word`, `max_word_len`, `long_word_ratio`, `tokens_per_word`, `punctuation_density`, `whitespace_ratio`, `uppercase_char_ratio`, `digit_char_ratio`
 - **Readability and lexical difficulty** (17): `question_complexity_score`, `is_readability_reliable`, `flesch_reading_ease`, `gunning_fog`, `coleman_liau_index`, `dale_chall_score`, `difficult_word_count`, `difficult_word_ratio`, `avg_syllables_per_word`, `polysyllable_count`, `type_token_ratio`, `root_type_token_ratio`, `mtld`, `word_entropy`, `char_entropy`, `stopword_ratio`, `content_word_count`
@@ -95,6 +95,7 @@ Ranked by expected power to predict retrieval failure, chosen to cover distinct 
 - **Domain and register** (9): `question_category`, `question_category_score`, `domain_hint`, `language_code`, `language_confidence`, `is_english`, `non_ascii_ratio`, `emoji_count`, `politeness_filler_count`
 - **Prompt-engineering artifacts** (15): `has_few_shot_examples`, `few_shot_example_count`, `template_repetition_score`, `prompt_contains_system_instructions`, `instruction_line_count`, `instruction_char_ratio`, `has_role_prompt`, `has_output_format_request`, `output_format`, `has_length_limit`, `has_context_block`, `context_block_char_ratio`, `has_citation_request`, `has_chain_of_thought_cue`, `core_question_ratio`
 - **Composite risk scores** (5): `retrieval_anchor_score`, `multi_need_score`, `lexical_rarity_score`, `temporal_risk_score`, `retrieval_difficulty_score`
+- **Exam-item traps** (11): `is_except_ask`, `is_best_answer_judgment`, `is_hypothetical_scenario`, `is_definition_ask`, `is_formula_setup`, `stem_word_count`, `is_long_scenario`, `mc_option_count`, `option_mean_chars`, `option_length_spread`, `has_escape_option`
 
 ---
 
@@ -2064,6 +2065,149 @@ _Blends of the features above, each with its terms shown._
 - **When it cannot be computed:**
   - always computed; individual modes fall back to 0 when their input is unavailable
 - **Why retrieval:** One headline number for triage and for sorting a dataset by expected difficulty.
+
+---
+
+## Exam-item traps
+
+_Multiple-choice wording that makes an LLM miss: except/NOT, best-answer, long hypos._
+
+### `is_except_ask`
+
+- **What we see:** Whether the question is an except / NOT / least / incorrect item.
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if the stem matches: which of the following is not, which is not, is not one of, all of the following except, except, least likely, least appropriate, incorrect, is false
+- **Example:** `'Which of the following is NOT a noble gas?'` -> `True`
+  - how that number was reached:
+    - stem matches: 'Which of the following is NOT'
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** The model has to invert the matching option. On this grid, except/NOT items failed more often than ordinary asks.
+
+### `is_best_answer_judgment`
+
+- **What we see:** Whether the item asks for the best / most likely / most nearly answer.
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if the stem matches most likely, best describes, most nearly, most appropriate, most accurate, best characterized, best explained, most closely, closest to
+- **Example:** `'Which of the following best describes the role of the Fed?'` -> `True`
+  - how that number was reached:
+    - judgment phrasing: 'best describes'
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** There is no unique fact; several options are plausible. These items failed at 44% vs 20% on the pilot grid.
+
+### `is_hypothetical_scenario`
+
+- **What we see:** Whether the item is a constructed scenario (if / suppose / a defendant).
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if the stem starts with If, or matches suppose, assume that, a defendant, a plaintiff, a prosecutor, imaginary
+- **Example:** `'A defendant was arrested and charged with attempted murder. Who must prove insanity?'` -> `True`
+  - how that number was reached:
+    - scenario cues: 'A defendant'
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** The model must track a made-up fact pattern. Long law hypos on this grid were missed by every model we ran.
+
+### `is_definition_ask`
+
+- **What we see:** Whether the item is a short What is / What are definition.
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if the stem starts with What is, What are, or What does
+- **Example:** `'What is Market Socialism?'` -> `True`
+  - how that number was reached:
+    - stem starts with a definition ask: True
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** Definition items on this grid failed less (16%) than the rest (21%).
+
+### `is_formula_setup`
+
+- **What we see:** Whether the item is a standard formula / deposit / rate calculation.
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if the stem contains $, %, compounded, deposit of, interest rate, or find the amount/value/sum
+- **Example:** `'If a deposit of $500 is made in an account that pays 8% compounded monthly, what is the amount after five years?'` -> `True`
+  - how that number was reached:
+    - formula cues: 'deposit of', '$', 'compounded'
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** Closed-form money and rate problems were the easiest items on this grid (every model got the $500 monthly deposit right).
+
+### `stem_word_count`
+
+- **What we see:** Word count of the question stem, ignoring lettered options.
+- **Type:** `int`, range >= 0
+- **Computed by:** python
+- **How it is calculated:** len(stem.split()) after stripping A.–J. option lines
+- **Example:** `'What is Market Socialism?\nA. A system\nB. A tax'` -> `4`
+  - how that number was reached:
+    - stem words = 4
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** The longest quartile of stems failed at 26%, the second-shortest at 13%. Length here is the hypo, not the options.
+
+### `is_long_scenario`
+
+- **What we see:** Whether the stem is a long hypo (80 or more words).
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** stem_word_count >= 80
+- **Built from:** `stem_word_count`
+- **Example:** `'What is 2+2?\nA. 3\nB. 4'` -> `False`
+  - how that number was reached:
+    - stem_word_count = 3.0; long if >= 80
+- **When it cannot be computed:** always computable for any prompt.
+- **Why retrieval:** Stems of 80+ words failed at 29% vs 19% for shorter ones on this grid.
+
+### `mc_option_count`
+
+- **What we see:** How many lettered A–J options are printed.
+- **Type:** `int`, range >= 2 when options are present
+- **Computed by:** python
+- **How it is calculated:** count of lines matching 'X. …' for X in A–J
+- **Example:** `'What is 2+2?\nA. 3\nB. 4\nC. 5'` -> `3`
+  - how that number was reached:
+    - 3 options: A, B, C
+- **When it cannot be computed:**
+  - not applicable when the prompt has no lettered A–J options
+- **Why retrieval:** More options is more chance to pick a near-miss; reported only when options are actually printed.
+
+### `option_mean_chars`
+
+- **What we see:** Average character length of the lettered options.
+- **Type:** `float`, range > 0 when options are present
+- **Computed by:** python
+- **How it is calculated:** mean(len(option_text)) over A–J lines
+- **Example:** `'What is 2+2?\nA. three\nB. four'` -> `4.5`
+  - how that number was reached:
+    - lengths [5, 4]; mean 4.50
+- **When it cannot be computed:**
+  - not applicable when the prompt has no lettered options
+- **Why retrieval:** Long options are often mini-essays; the model has to compare several near-paragraphs.
+
+### `option_length_spread`
+
+- **What we see:** How uneven option lengths are (sample standard deviation of characters).
+- **Type:** `float`, range >= 0 when options are present
+- **Computed by:** python
+- **How it is calculated:** stdev(len(option_text)); 0 if fewer than 2 options
+- **Example:** `'What?\nA. no\nB. a much longer option text'` -> `16.263455967290593`
+  - how that number was reached:
+    - lengths [2, 25]; stdev 16.263
+- **When it cannot be computed:**
+  - not applicable when the prompt has no lettered options
+- **Why retrieval:** One long option next to short ones is a format cue models over-weight.
+
+### `has_escape_option`
+
+- **What we see:** Whether an option is all/none of the above or cannot be determined.
+- **Type:** `bool`, range True / False
+- **Computed by:** python
+- **How it is calculated:** true if any option matches all of the above, none of the above, cannot be determined, not enough information, insufficient information
+- **Example:** `'What is 2+2?\nA. 4\nB. Cannot be determined'` -> `True`
+  - how that number was reached:
+    - escape options: 'B. Cannot be determined'
+- **When it cannot be computed:**
+  - not applicable when the prompt has no lettered options
+- **Why retrieval:** Escape options are a known trap; the one 'cannot be determined' item on this grid was missed by every model.
 
 ---
 

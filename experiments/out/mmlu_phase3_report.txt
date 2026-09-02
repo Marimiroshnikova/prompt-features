@@ -1,0 +1,58 @@
+==============================================================================
+Phase 3 baselines  —  280 questions × 14 models
+==============================================================================
+Label: y_fail from one generation (n=1 Bernoulli, not incorrect/10).
+Splits: StratifiedGroupKFold on question_id; a question never crosses.
+Feature selection for prompt_short is nested inside each training fold.
+rows 3920   questions 280   fail rate 0.2054
+
+method                                Brier       log loss          AUROC
+global                        0.1632+-0.002  0.5078+-0.004   0.500+-0.000
+model                         0.1592+-0.002  0.4963+-0.006   0.592+-0.016
+category                      0.1602+-0.008  0.5020+-0.025   0.633+-0.064
+model_x_category              0.1563+-0.005  0.4883+-0.016   0.650+-0.037
+length_only                   0.1636+-0.002  0.5087+-0.005   0.534+-0.055
+prompt_short                  0.1692+-0.004  0.5307+-0.022   0.540+-0.041
+prompt_short_plus_model       0.1655+-0.004  0.5200+-0.021   0.591+-0.033
+
+Does prompt_short beat the Model baseline on Brier? NO
+Does prompt_short beat Model × category on Brier? NO
+Does prompt_short + model beat Model on Brier? NO
+Does prompt_short + model beat Model × category on Brier? NO
+
+Lower Brier is better. If prompt_short does not beat Model,
+prompt features are not adding risk signal on this grid.
+
+Features chosen inside repeat-0 training folds (nested, 5 folds):
+  f_rare_word_count                          5/5
+  f_oov_like_count                           5/5
+  f_min_word_zipf                            5/5
+  f_aggregation_flag                         5/5
+  f_context_token_count                      5/5
+  f_max_word_len                             5/5
+  f_question_type=who                        4/5
+  f_content_word_count                       4/5
+  f_question_type=what                       4/5
+  f_mtld                                     4/5
+  f_temporal_type=range                      3/5
+  f_domain_hint=finance                      3/5
+  f_domain_hint=legal                        2/5
+  f_hop_estimate                             2/5
+  f_definite_np_without_entity_count         2/5
+  f_is_ambiguous                             1/5
+  f_domain_hint=business                     1/5
+  f_vague_quantifiers_count                  1/5
+  f_n_sentences                              1/5
+  f_difficult_word_count                     1/5
+  f_rare_word_ratio                          1/5
+  f_jargon_ratio                             1/5
+  f_core_question_ratio                      1/5
+  f_question_length_chars                    1/5
+  f_is_multi_part                            1/5
+  f_lexical_rarity_score                     1/5
+  f_anchor_count                             1/5
+  f_type_token_ratio                         1/5
+  f_entity_count                             1/5
+  f_unit_count                               1/5
+  f_max_bpe_fertility                        1/5
+  f_domain_hint=science                      1/5

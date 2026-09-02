@@ -1,0 +1,36 @@
+==============================================================================
+Mis-prompt  -  29,392 prompts, half carrying a planted flaw
+==============================================================================
+rows 29392   model columns 166   flaw subtypes 14
+flawed id range 1-14696   clean id range 20001-34696
+median words: flawed 16, clean 12  <- the corpus cue the controls have to remove
+
+length-matched subsample: 21068 rows (0.500 flawed), median words 14 in both classes
+
+setting                             prompt feats   length only   null p95
+naive (random grouping)                    0.984         0.709      0.507
+unseen flaw subtype                        0.956         0.686      0.765
+length matched                             0.979         0.551      0.508
+length matched + unseen subtype            0.951         0.511      0.753
+
+------------------------------------------------------------------------------
+Univariate AUC on the length-matched subsample (corpus length cue
+removed). These are the features that actually see the flaw.
+------------------------------------------------------------------------------
+124 of 161 testable features significant at BH q<0.05
+feature                                          AUC           q
+f_anchor_density                               0.200    0.00e+00
+f_retrieval_anchor_score                       0.216    0.00e+00
+f_uppercase_char_ratio                         0.222    0.00e+00
+f_anchor_count                                 0.223    0.00e+00
+f_retrieval_difficulty_score                   0.746    0.00e+00
+f_anchor_free_flag                             0.743    0.00e+00
+f_entity_count                                 0.263    0.00e+00
+f_distinct_entity_types                        0.263    0.00e+00
+f_question_category=Reasoning                  0.736    0.00e+00
+f_question_category=Fact Retrieval             0.277    0.00e+00
+f_named_entity_hint                            0.277    0.00e+00
+f_underspecification_score                     0.718    0.00e+00
+f_proper_noun_token_count                      0.282    0.00e+00
+f_tokens_per_word                              0.298    0.00e+00
+f_question_type=which                          0.306    0.00e+00

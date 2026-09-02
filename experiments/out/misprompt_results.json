@@ -1,0 +1,30 @@
+{
+  "naive (random grouping)": {
+    "prompt_features": 0.9838240786494241,
+    "prompt_features_sd": 0.0015121531874808243,
+    "length_only": 0.7087521629392344,
+    "null_p95": 0.5065021163852014,
+    "n": 29392
+  },
+  "unseen flaw subtype": {
+    "prompt_features": 0.9558459439199684,
+    "prompt_features_sd": 0.031027909763236945,
+    "length_only": 0.6858640884052464,
+    "null_p95": 0.7645529585684565,
+    "n": 29392
+  },
+  "length matched": {
+    "prompt_features": 0.9789393195717156,
+    "prompt_features_sd": 0.0026022954396742832,
+    "length_only": 0.5510529646170165,
+    "null_p95": 0.5084954036501639,
+    "n": 21068
+  },
+  "length matched + unseen subtype": {
+    "prompt_features": 0.951308447894373,
+    "prompt_features_sd": 0.02951902002183357,
+    "length_only": 0.5107018268448671,
+    "null_p95": 0.7525181052256238,
+    "n": 21068
+  }
+}

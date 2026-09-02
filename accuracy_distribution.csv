@@ -1,0 +1,16 @@
+llm_model,n_questions,n_correct,n_wrong,accuracy
+gemini-2.5-flash-lite,280,179,101,0.639286
+gemini-2.5-flash,280,188,92,0.671429
+gemini-2.5-pro,280,228,52,0.814286
+gemini-3-flash-preview,280,198,82,0.707143
+gemini-3.1-flash-lite,280,228,52,0.814286
+gemini-3.1-flash-lite-preview,280,232,48,0.828571
+gemini-3.1-pro-preview,280,231,49,0.825
+gemini-3.1-pro-preview-customtools,280,236,44,0.842857
+gemini-3.5-flash,280,229,51,0.817857
+gemma-4-26b-a4b-it,280,223,57,0.796429
+gemma-4-31b-it,280,232,48,0.828571
+gemini-flash-latest,280,248,32,0.885714
+gemini-flash-lite-latest,280,226,54,0.807143
+gemini-pro-latest,280,237,43,0.846429
+ALL,3920,3115,805,0.794643

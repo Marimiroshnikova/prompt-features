@@ -1,0 +1,34 @@
+{
+  "level 1  pooled": {
+    "prompt_features": 0.6845134715353047,
+    "length_only": 0.6161834550492826,
+    "null_p95": 0.5468283925269943
+  },
+  "level 2  within task": {
+    "prompt_features": 0.674838134537348,
+    "length_only": 0.7026390878526652,
+    "null_p95": 0.532605738472274
+  },
+  "level 3  within task x easy/difficult variant": {
+    "prompt_features": 0.5627737293814462,
+    "length_only": 0.5554158614276734,
+    "null_p95": 0.5362133094435632
+  },
+  "per_task": {
+    "answerability_classification": {
+      "prompt_features": 0.5769192264643701,
+      "length_only": 0.6359467106081333,
+      "n": 300
+    },
+    "finegrained_fact_verification": {
+      "prompt_features": 0.6854816123419064,
+      "length_only": 0.6696616479925304,
+      "n": 300
+    },
+    "math_problem_generation": {
+      "prompt_features": 0.7621135648057674,
+      "length_only": 0.8023089049573318,
+      "n": 300
+    }
+  }
+}

@@ -1,0 +1,46 @@
+Trial 1 + Trial 2 merge
+n_trials = 2. Not the plan's 10.
+
+rows 3920  questions 280  models 14
+mean accuracy (correct/2) 0.7176
+mean fail risk (1-accuracy) 0.2824
+trial2 parsed letter 3041/3920
+trial2 missing letter 879 (empty reply or parser miss; counted wrong)
+both letters present 3041
+letter flip among parsed pairs 0.0973
+
+Flip rate by model (only rows with both letters):
+                                      n      flip       acc
+llm_model                                                  
+gemini-2.5-flash-lite               278  0.244604  0.654676
+gemini-2.5-flash                    241  0.228216  0.686722
+gemma-4-26b-a4b-it                   50  0.120000  0.890000
+gemini-3-flash-preview              153  0.117647  0.826797
+gemini-2.5-pro                      146  0.109589  0.839041
+gemini-3.1-flash-lite               280  0.096429  0.819643
+gemini-3.1-flash-lite-preview       280  0.089286  0.823214
+gemini-3.1-pro-preview              226  0.075221  0.876106
+gemini-flash-lite-latest            278  0.064748  0.809353
+gemini-flash-latest                 277  0.054152  0.879061
+gemini-pro-latest                   218  0.050459  0.910550
+gemini-3.5-flash                    241  0.041494  0.875519
+gemini-3.1-pro-preview-customtools  219  0.031963  0.883562
+gemma-4-31b-it                      154  0.019481  0.905844
+
+Flip rate by subject (only rows with both letters):
+                     n      flip       acc
+question_category                         
+engineering        164  0.207317  0.685976
+chemistry          188  0.196809  0.696809
+law                198  0.141414  0.742424
+health             217  0.138249  0.580645
+business           184  0.125000  0.839674
+physics            223  0.112108  0.899103
+psychology         232  0.103448  0.868534
+computer science   218  0.077982  0.747706
+math               225  0.071111  0.917778
+biology            229  0.069869  0.875546
+history            232  0.060345  0.859914
+philosophy         233  0.055794  0.869099
+other              250  0.048000  0.910000
+economics          248  0.028226  0.957661

@@ -1,0 +1,44 @@
+Exam-trap features — built from the 805 misses, not from retrieval theory
+=========================================================================
+
+We read the questions every model missed and the ones nobody missed, then
+wrote 11 features that name those patterns. They live in promptfeat/f_exam.py
+and run on the question stem + lettered options only.
+
+What the misses looked like
+---------------------------
+Easy:  "If you deposit $500 each month at 8% compounded monthly, what is
+        the amount after five years?"  — 0/14 wrong
+Hard:  a page-long law hypo about an indigent defendant  — 14/14 wrong
+Hard:  "Which of the following is NOT one of the more frequently named
+        activities by those who are retired?"  — 14/14 wrong
+
+The new features (on 280 questions)
+-----------------------------------
+feature                      n_true   fail if true   fail if false
+is_best_answer_judgment         15         43.8%          19.2%
+is_except_ask                   11         40.9%          19.7%
+is_long_scenario (80+ words)    43         29.1%          19.0%
+is_hypothetical_scenario        22         26.3%          20.0%
+is_definition_ask               24         16.1%          21.0%
+is_formula_setup                39         17.0%          21.1%
+has_escape_option                2         64.3%          20.2%   (too rare)
+stem_word_count                  —   Spearman +0.19 with fail rate
+
+How to say this
+---------------
+"Most likely / best describes" items fail about twice as often.
+Except / NOT items fail about twice as often.
+Long hypos (80+ words) fail about half again as often.
+Short "What is X?" and $/% formula items fail a bit less.
+
+These are counts you can explain. They are not a replacement for
+"this is a health question on a weak model." Health "What is" items
+still fail 73% — the subject still wins. The new features name the
+wording traps inside a subject.
+
+Files
+-----
+promptfeat/f_exam.py
+experiments/out/mmlu_exam_features.csv
+experiments/out/mmlu_exam_univariate.csv

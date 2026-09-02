@@ -1,0 +1,60 @@
+==============================================================================
+ReaLMistake  -  900 expert-labeled responses over 480 unique prompts
+==============================================================================
+rows 900   unique prompts 480   model columns 144 (from 138 features)
+error rate 0.721   difficult rate 0.798
+features with <50% coverage on this data: 5 of 138
+
+------------------------------------------------------------------------------
+TARGET: error   (positive rate 0.721)
+------------------------------------------------------------------------------
+feature set                                        logreg AUC          gbm AUC
+length only (2 features)                        0.616 +-0.045    0.673 +-0.023
+all prompt features                             0.685 +-0.026    0.723 +-0.044
+responder model only (1 feature)                0.613 +-0.018    0.613 +-0.015
+all prompt features + responder model           0.759 +-0.028    0.814 +-0.036
+
+permutation null for 'all prompt features' (labels shuffled between prompts, 30 runs):
+    mean 0.509   95th pct 0.547   max 0.557
+    observed 0.685 is ABOVE the 95th percentile of the null
+
+univariate: 60 of 142 testable features significant at BH q<0.05
+feature                                     AUC   95% CI (cluster bootstrap)         q
+f_instruction_line_count                  0.694               [0.656, 0.730]  1.62e-18 *
+f_context_token_count                     0.624               [0.577, 0.665]  1.56e-07 *
+f_question_length_chars                   0.618               [0.566, 0.657]  5.46e-07 *
+f_question_length_words                   0.614               [0.573, 0.657]  1.60e-06 *
+f_content_word_count                      0.613               [0.569, 0.656]  1.61e-06 *
+f_definite_np_without_entity_count        0.607               [0.569, 0.645]  5.17e-06 *
+f_n_sentences                             0.606               [0.569, 0.641]  5.17e-06 *
+f_punctuation_density                     0.602               [0.554, 0.647]  1.57e-05 *
+f_type_token_ratio                        0.400               [0.363, 0.438]  2.40e-05 *
+f_difficult_word_count                    0.599               [0.546, 0.641]  2.91e-05 *
+f_word_entropy                            0.596               [0.548, 0.644]  4.85e-05 *
+f_negation_count                          0.596               [0.557, 0.634]  2.95e-05 *
+
+------------------------------------------------------------------------------
+TARGET: difficult   (positive rate 0.798)
+------------------------------------------------------------------------------
+feature set                                        logreg AUC          gbm AUC
+length only (2 features)                        0.739 +-0.051    0.878 +-0.042
+all prompt features                             0.920 +-0.025    0.927 +-0.021
+
+permutation null for 'all prompt features' (labels shuffled between prompts, 30 runs):
+    mean 0.499   95th pct 0.562   max 0.566
+    observed 0.920 is ABOVE the 95th percentile of the null
+
+univariate: 71 of 142 testable features significant at BH q<0.05
+feature                                     AUC   95% CI (cluster bootstrap)         q
+f_instruction_line_count                  0.940               [0.922, 0.955]  2.55e-77 *
+f_n_sentences                             0.763               [0.723, 0.799]  8.62e-28 *
+f_definite_np_without_entity_count        0.749               [0.711, 0.789]  3.40e-24 *
+f_context_token_count                     0.744               [0.681, 0.800]  3.73e-23 *
+f_question_length_chars                   0.738               [0.677, 0.792]  3.70e-22 *
+f_type_token_ratio                        0.263               [0.221, 0.312]  6.32e-22 *
+f_negation_count                          0.734               [0.694, 0.776]  1.10e-22 *
+f_question_length_words                   0.733               [0.679, 0.787]  2.96e-21 *
+f_punctuation_density                     0.729               [0.667, 0.790]  1.23e-20 *
+f_content_word_count                      0.727               [0.666, 0.786]  2.61e-20 *
+f_difficult_word_count                    0.708               [0.647, 0.773]  2.50e-17 *
+f_quoted_span_count                       0.707               [0.653, 0.763]  1.20e-17 *
