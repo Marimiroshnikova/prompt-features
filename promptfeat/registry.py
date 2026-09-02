@@ -152,6 +152,11 @@ GROUPS: list[tuple[str, str, str]] = [
         "Composite risk scores",
         "Blends of the features above, each with its terms shown.",
     ),
+    (
+        "exam",
+        "Exam-item traps",
+        "Multiple-choice wording that makes an LLM miss: except/NOT, best-answer, long hypos.",
+    ),
 ]
 
 GROUP_ORDER = [key for key, _, _ in GROUPS]

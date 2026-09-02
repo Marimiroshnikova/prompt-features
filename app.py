@@ -60,11 +60,12 @@ def _load_model_specs() -> dict:
 MODEL_SPECS = _load_model_specs()
 
 
-def _load_baseline() -> dict:
-    path = WEB_DIR / "baseline.json"
+def _load_json(name: str) -> dict:
+    path = WEB_DIR / name
     if not path.is_file():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
 
 # Analysis cost grows with prompt length (a 20k-char paste takes about two
 # seconds), so a public instance needs a bound to stay responsive.
@@ -186,12 +187,14 @@ def schema_payload() -> dict:
     }
     return {
         "feature_count": len(REGISTRY),
-        "top30": TOP30_FEATURES,
+        "top30": [item["name"] for item in _load_json("top30.json").get("features", [])]
+        or TOP30_FEATURES,
+        "top30_detail": _load_json("top30.json"),
         "features": [feature_declaration(f) for f in REGISTRY.values()],
         "groups": groups,
         "plan_groups": PLAN_GROUPS,
         "models": models,
-        "baseline": _load_baseline(),
+        "baseline": _load_json("baseline.json"),
         "status_labels": STATUS_LABELS,
         "samples": SAMPLES,
         "backends": nlp.backend_report(),

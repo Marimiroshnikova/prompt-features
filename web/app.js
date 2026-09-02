@@ -310,11 +310,33 @@ function promptGroupSections() {
   });
 }
 
+function top30List() {
+  const detail = (state.schema.top30_detail && state.schema.top30_detail.features) || [];
+  const names = detail.length ? detail : (state.schema.top30 || []).map((name, i) => ({ name, rank: i + 1 }));
+  const source = state.report
+    ? state.report.features
+    : (state.schema.features || []).map(catalogRow);
+  const byName = Object.fromEntries(source.map((f) => [f.name, f]));
+  return names
+    .map((item) => {
+      const name = typeof item === "string" ? item : item.name;
+      const f = byName[name];
+      if (!f) return null;
+      const rank = typeof item === "string" ? names.indexOf(item) + 1 : item.rank;
+      const rho = item.spearman;
+      const reason = rho == null
+        ? "Ranked by miss rate on the 280-question grid."
+        : `Spearman ${rho} vs question miss rate on 280 questions (14 models, one answer).`;
+      return { ...f, tier: 1, rank, rank_reason: reason };
+    })
+    .filter(Boolean);
+}
+
 function visibleFeatures() {
   let list;
   if (state.view === "plan") list = planVisibleFeatures();
+  else if (state.view === "top") list = top30List();
   else if (!state.report) list = (state.schema.features || []).map(catalogRow);
-  else if (state.view === "top") list = state.report.top;
   else if (state.view === "issues") list = state.report.features.filter((f) => f.status !== "ok");
   else list = state.report.features;
   return list.filter((f) => matchesFilter(f) && (!state.onlyActive || isActive(f) || f.status !== "ok"));
@@ -574,7 +596,7 @@ function renderList() {
   } else {
     const heading =
       state.view === "top"
-        ? `<h2>The 30 most important features, in rank order</h2><p class="blurb">Ranked by expected power to predict retrieval failure. Click any row to see the calculation.</p>`
+        ? `<h2>Top 30 for misses on this exam grid</h2><p class="blurb">Ranked by how the value moves with question miss rate (280 questions, 14 models, one answer). Near-duplicates dropped. This is not the old retrieval ranking, and it still loses to model x subject.</p>`
         : `<h2>Features that could not be computed normally (${features.length})</h2><p class="blurb">Each one says why, so a downstream model is never fed a fake zero.</p>`;
     host.innerHTML = `<section class="group">${heading}<div class="rows">${features.map(rowHtml).join("")}</div></section>`;
   }

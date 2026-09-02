@@ -1,0 +1,247 @@
+{
+  "source": "280 MMLU-Pro questions, fail rate across 14 models, n=1",
+  "method": "largest |Spearman| vs question fail rate; drop |corr| >= 0.9; one dummy per categorical; cap 30",
+  "note": "Better for this exam grid than the retrieval ranking. Still weak: most are not BH-significant. Does not beat model x subject.",
+  "features": [
+    {
+      "name": "rare_word_count",
+      "rank": 1,
+      "column": "f_rare_word_count",
+      "spearman": 0.1949,
+      "q": 0.0769,
+      "significant": false
+    },
+    {
+      "name": "stem_word_count",
+      "rank": 2,
+      "column": "f_stem_word_count",
+      "spearman": 0.1928,
+      "q": 0.0769,
+      "significant": false
+    },
+    {
+      "name": "oov_like_count",
+      "rank": 3,
+      "column": "f_oov_like_count",
+      "spearman": 0.1871,
+      "q": 0.0769,
+      "significant": false
+    },
+    {
+      "name": "context_token_count",
+      "rank": 4,
+      "column": "f_context_token_count",
+      "spearman": 0.1816,
+      "q": 0.0792,
+      "significant": false
+    },
+    {
+      "name": "is_long_scenario",
+      "rank": 5,
+      "column": "f_is_long_scenario",
+      "spearman": 0.1658,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "min_word_zipf",
+      "rank": 6,
+      "column": "f_min_word_zipf",
+      "spearman": -0.1625,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "is_best_answer_judgment",
+      "rank": 7,
+      "column": "f_is_best_answer_judgment",
+      "spearman": 0.1601,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "content_word_count",
+      "rank": 8,
+      "column": "f_content_word_count",
+      "spearman": 0.1591,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "question_type",
+      "rank": 9,
+      "column": "f_question_type=what",
+      "spearman": -0.1581,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "aggregation_flag",
+      "rank": 10,
+      "column": "f_aggregation_flag",
+      "spearman": 0.1566,
+      "q": 0.1095,
+      "significant": false
+    },
+    {
+      "name": "max_word_len",
+      "rank": 11,
+      "column": "f_max_word_len",
+      "spearman": 0.1464,
+      "q": 0.1522,
+      "significant": false
+    },
+    {
+      "name": "mtld",
+      "rank": 12,
+      "column": "f_mtld",
+      "spearman": -0.1443,
+      "q": 0.1558,
+      "significant": false
+    },
+    {
+      "name": "domain_hint",
+      "rank": 13,
+      "column": "f_domain_hint=finance",
+      "spearman": -0.1382,
+      "q": 0.1918,
+      "significant": false
+    },
+    {
+      "name": "type_token_ratio",
+      "rank": 14,
+      "column": "f_type_token_ratio",
+      "spearman": -0.1313,
+      "q": 0.2441,
+      "significant": false
+    },
+    {
+      "name": "temporal_type",
+      "rank": 15,
+      "column": "f_temporal_type=range",
+      "spearman": 0.1291,
+      "q": 0.2514,
+      "significant": false
+    },
+    {
+      "name": "is_except_ask",
+      "rank": 16,
+      "column": "f_is_except_ask",
+      "spearman": 0.125,
+      "q": 0.2672,
+      "significant": false
+    },
+    {
+      "name": "definite_np_without_entity_count",
+      "rank": 17,
+      "column": "f_definite_np_without_entity_count",
+      "spearman": 0.1178,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "rare_word_ratio",
+      "rank": 18,
+      "column": "f_rare_word_ratio",
+      "spearman": 0.1162,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "max_bpe_fertility",
+      "rank": 19,
+      "column": "f_max_bpe_fertility",
+      "spearman": 0.1145,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "hop_estimate",
+      "rank": 20,
+      "column": "f_hop_estimate",
+      "spearman": 0.1138,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "max_parse_depth",
+      "rank": 21,
+      "column": "f_max_parse_depth",
+      "spearman": 0.1128,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "has_escape_option",
+      "rank": 22,
+      "column": "f_has_escape_option",
+      "spearman": 0.1123,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "is_ambiguous",
+      "rank": 23,
+      "column": "f_is_ambiguous",
+      "spearman": 0.1112,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "difficult_word_count",
+      "rank": 24,
+      "column": "f_difficult_word_count",
+      "spearman": 0.1104,
+      "q": 0.3348,
+      "significant": false
+    },
+    {
+      "name": "jargon_ratio",
+      "rank": 25,
+      "column": "f_jargon_ratio",
+      "spearman": 0.1073,
+      "q": 0.3631,
+      "significant": false
+    },
+    {
+      "name": "n_sentences",
+      "rank": 26,
+      "column": "f_n_sentences",
+      "spearman": 0.1052,
+      "q": 0.3778,
+      "significant": false
+    },
+    {
+      "name": "anchor_count",
+      "rank": 27,
+      "column": "f_anchor_count",
+      "spearman": 0.1028,
+      "q": 0.3873,
+      "significant": false
+    },
+    {
+      "name": "core_question_ratio",
+      "rank": 28,
+      "column": "f_core_question_ratio",
+      "spearman": 0.1027,
+      "q": 0.3873,
+      "significant": false
+    },
+    {
+      "name": "unit_count",
+      "rank": 29,
+      "column": "f_unit_count",
+      "spearman": 0.0978,
+      "q": 0.4208,
+      "significant": false
+    },
+    {
+      "name": "temporal_expression_count",
+      "rank": 30,
+      "column": "f_temporal_expression_count",
+      "spearman": 0.0978,
+      "q": 0.4208,
+      "significant": false
+    }
+  ]
+}

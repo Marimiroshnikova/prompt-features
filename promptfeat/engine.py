@@ -32,6 +32,7 @@ from . import f_domain  # noqa: F401
 from . import f_promptcraft  # noqa: F401
 from . import f_ambiguity  # noqa: F401
 from . import f_composite  # noqa: F401
+from . import f_exam  # noqa: F401
 
 _order_cache: list[str] | None = None
 
