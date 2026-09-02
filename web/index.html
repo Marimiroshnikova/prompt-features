@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Prompt features — 3 groups</title>
-<link rel="stylesheet" href="/styles.css?v=3groups" />
+<title>Prompt features: 3 groups</title>
+<link rel="stylesheet" href="/styles.css?v=4" />
 </head>
 <body>
 <header class="topbar">
@@ -28,14 +28,20 @@
       <button id="download-csv" class="ghost" title="Download one row of values">CSV</button>
       <button id="download-report" class="ghost" title="Download the full calculation report">Report</button>
     </div>
-    <label class="label" for="model" style="margin-top:14px">Model — fills groups 2 and 3, and the baseline</label>
-    <select id="model">
-      <option value="">Prompt only — pick a model for Model, Interaction, and baseline</option>
-    </select>
-    <label class="label" for="category" style="margin-top:10px">Subject — optional, for model × subject</label>
-    <select id="category">
-      <option value="">No subject</option>
-    </select>
+    <div class="selectors">
+      <div>
+        <label class="label" for="model">Model</label>
+        <select id="model">
+          <option value="">Prompt only</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="category">Subject</label>
+        <select id="category">
+          <option value="">No subject</option>
+        </select>
+      </div>
+    </div>
     <div class="samples">
       <span class="label small">Try one</span>
       <div id="samples" class="chips"></div>
@@ -53,17 +59,17 @@
         <button class="tab" data-view="all">All features</button>
         <button class="tab" data-view="issues">Not computed</button>
       </div>
-      <input id="filter" type="search" placeholder="Filter by name or meaning" />
-      <label class="toggle"><input type="checkbox" id="only-active" /> Only meaningful values</label>
-      <button id="expand-all" class="ghost small">Expand all</button>
+      <div class="toolbar-tools">
+        <input id="filter" type="search" placeholder="Filter by name or meaning" />
+        <label class="toggle"><input type="checkbox" id="only-active" /> Only meaningful values</label>
+        <button id="expand-all" class="ghost small">Expand all</button>
+      </div>
     </div>
 
     <div id="feature-list"></div>
   </section>
-
-  <section id="empty" class="empty" hidden></section>
 </main>
 
-<script src="/app.js?v=3groups"></script>
+<script src="/app.js?v=4"></script>
 </body>
 </html>

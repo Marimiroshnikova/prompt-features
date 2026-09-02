@@ -75,7 +75,10 @@ function renderBackends() {
 
 function renderSamples() {
   el("samples").innerHTML = state.schema.samples
-    .map((text, i) => `<button class="chip" data-i="${i}">${escapeHtml(text.replace(/\n/g, " \u23ce "))}</button>`)
+    .map((text, i) => {
+      const label = text.split("\n")[0];
+      return `<button class="chip" data-i="${i}">${escapeHtml(label)}</button>`;
+    })
     .join("");
   el("samples").querySelectorAll(".chip").forEach((chip) => {
     chip.addEventListener("click", () => {
@@ -283,7 +286,7 @@ function catalogRow(decl) {
   return {
     ...decl,
     value: null,
-    display_value: "—",
+    display_value: "-",
     status: "ok",
     reason: "",
     steps: [],
@@ -454,7 +457,7 @@ function planVisibleFeatures() {
 }
 
 function pct(rate) {
-  if (rate === null || rate === undefined || Number.isNaN(Number(rate))) return "—";
+  if (rate === null || rate === undefined || Number.isNaN(Number(rate))) return "-";
   return `${(Number(rate) * 100).toFixed(1)}%`;
 }
 
@@ -472,10 +475,10 @@ function baselineCardHtml() {
     : "Pick a model to see the model baseline that beat the prompt features.";
   const cellNote = state.model && state.category
     ? "The winner: this model on this subject."
-    : "Pick a subject to see model × subject.";
+    : "Pick a subject to see model x subject.";
   return `<section class="group plan-group">
     <h2>Baseline</h2>
-    <p class="blurb">Not a prompt feature. Miss rate from one answer × 280 questions × 14 models. Prompt text lost to these lookups.</p>
+    <p class="blurb">Not a prompt feature. Miss rate from one answer x 280 questions x 14 models. Prompt text lost to these lookups.</p>
     <div class="summary" style="margin-bottom:12px">
       <div class="card">
         <div class="k">Overall</div>
@@ -484,17 +487,17 @@ function baselineCardHtml() {
       </div>
       <div class="card">
         <div class="k">This model</div>
-        <div class="v">${state.model ? pct(modelRate) : "—"}</div>
+        <div class="v">${state.model ? pct(modelRate) : "-"}</div>
         <div class="sub">${escapeHtml(modelNote)}</div>
       </div>
       <div class="card">
         <div class="k">This subject</div>
-        <div class="v">${state.category ? pct(catRate) : "—"}</div>
+        <div class="v">${state.category ? pct(catRate) : "-"}</div>
         <div class="sub">${state.category ? escapeHtml(state.category) : "pick a subject"}</div>
       </div>
       <div class="card headline">
-        <div class="k">Model × subject</div>
-        <div class="v">${cellRate == null ? "—" : pct(cellRate)}</div>
+        <div class="k">Model x subject</div>
+        <div class="v">${cellRate == null ? "-" : pct(cellRate)}</div>
         <div class="sub">${escapeHtml(cellNote)}</div>
       </div>
     </div>
@@ -504,7 +507,7 @@ function baselineCardHtml() {
 function renderPlanGroups() {
   const wanted = new Set(visibleFeatures().map((f) => f.name));
   const plans = state.schema.plan_groups || [];
-  return plans
+  const cols = plans
     .map((plan) => {
       if (plan.key === "prompt") {
         const inner = promptGroupSections()
@@ -517,7 +520,7 @@ function renderPlanGroups() {
           })
           .join("");
         if (!inner) return "";
-        return `<section class="group plan-group">
+        return `<section class="group plan-group plan-col">
             <h2>1. Prompt</h2>
             <p class="blurb">${escapeHtml(plan.blurb)}</p>
             ${inner}
@@ -528,18 +531,19 @@ function renderPlanGroups() {
       const shown = rows.filter((f) => wanted.has(f.name));
       const needModel = !state.model;
       const empty = needModel
-        ? `<div class="rows"><div class="nothing">Pick a model on the left to fill ${escapeHtml(plan.title)}.</div></div>`
+        ? `<div class="rows"><div class="nothing">Pick a model to fill ${escapeHtml(plan.title)}.</div></div>`
         : shown.length
           ? `<div class="rows">${shown.map(rowHtml).join("")}</div>`
           : `<div class="rows"><div class="nothing">No ${escapeHtml(plan.title).toLowerCase()} rows match this filter.</div></div>`;
       const n = plan.key === "model" ? "2" : "3";
-      return `<section class="group plan-group">
+      return `<section class="group plan-group plan-col">
           <h2>${n}. ${escapeHtml(plan.title)}${shown.length ? ` <span style="color:var(--faint)">(${shown.length})</span>` : ""}</h2>
           <p class="blurb">${escapeHtml(plan.blurb)}</p>
           ${empty}
         </section>`;
     })
     .join("");
+  return `<div class="plan-grid">${cols}</div>`;
 }
 
 function renderList() {

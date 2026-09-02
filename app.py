@@ -72,16 +72,11 @@ MAX_PROMPT_CHARS = int(os.environ.get("MAX_PROMPT_CHARS", "20000"))
 MAX_BODY = MAX_PROMPT_CHARS * 4 + 1024  # UTF-8 worst case, plus the JSON wrapper
 
 SAMPLES = [
-    "Who wrote The Hobbit?",
-    "What about it?",
-    "Instructions:\nUse the docs only.\nCompare ibuprofen and aspirin for fever in children after 2020. What dose is safe? What should be avoided?",
-    "What are the latest treatments for type 2 diabetes?",
-    "Can you tell me more about that thing we discussed?",
-    'Find the paper titled "Attention Is All You Need" and summarize it in JSON.',
-    "List three EU countries except France that joined after 2004",
-    "Who directed the film that won the Oscar for best picture in 1994?",
-    "Example 1: Paris -> France\nExample 2: Rome -> Italy\nExample 3: Tokyo ->",
-    "\u00bfQui\u00e9n escribi\u00f3 El Hobbit y en qu\u00e9 a\u00f1o?",
+    "Which of the following is NOT a noble gas?\n\nA. Helium\nB. Neon\nC. Nitrogen\nD. Argon",
+    "What is market socialism?\n\nA. State ownership with some market prices\nB. A sales tax\nC. A trade union\nD. A central bank",
+    "Which of the following best describes the role of the Federal Reserve?\n\nA. Set the federal budget\nB. Conduct monetary policy\nC. Collect tariffs\nD. Run elections",
+    "If a deposit of $500 is made at 8% compounded monthly, what is the amount after five years?\n\nA. $670\nB. $745\nC. $910\nD. $1,020",
+    "A defendant was arrested in 2024 and charged with attempted murder. Who must prove insanity?\n\nA. The prosecution\nB. The defense\nC. The judge\nD. The jury",
 ]
 
 
@@ -100,7 +95,7 @@ PLAN_GROUPS = [
         "fields": [
             {
                 "name": "model_family",
-                "summary": "Id prefix (gemini-2.5, gemma-4, gemini-latest, …).",
+                "summary": "Id prefix (gemini-2.5, gemma-4, gemini-latest, ...).",
                 "formula": "prefix of the model id",
                 "why": "Families differ in fail rate more than any prompt wording we measured.",
             },
