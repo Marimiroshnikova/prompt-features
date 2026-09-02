@@ -118,6 +118,18 @@ textarea {
 }
 textarea:focus { outline: none; border-color: var(--accent-dim); box-shadow: 0 0 0 3px rgba(106,168,255,0.09); }
 
+select {
+  width: 100%;
+  background: #0d1116;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text);
+}
+select:focus { outline: none; border-color: var(--accent-dim); box-shadow: 0 0 0 3px rgba(106,168,255,0.09); }
+
 .actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .spacer { flex: 1; }
 
@@ -260,6 +272,17 @@ button.ghost.small { padding: 5px 9px; font-size: 11px; }
   padding: 0 2px;
 }
 .group > .blurb { font-size: 12.5px; color: var(--faint); margin: 0 0 10px; padding: 0 2px; }
+.group h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  margin: 16px 0 4px;
+  padding: 0 2px;
+}
+.group h3:first-of-type { margin-top: 8px; }
+.plan-group { padding-bottom: 8px; border-bottom: 1px solid var(--line-soft); }
+.plan-group:last-child { border-bottom: none; }
 
 .rows { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
 

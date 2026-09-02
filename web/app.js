@@ -6,6 +6,8 @@ const state = {
   view: "top",
   filter: "",
   onlyActive: false,
+  model: "",
+  category: "",
   open: new Set(),
 };
 
@@ -25,6 +27,8 @@ async function boot() {
   el("feature-count").textContent = `${state.schema.feature_count} features`;
   renderBackends();
   renderSamples();
+  renderModels();
+  renderCategories();
   wire();
   const params = new URLSearchParams(location.search);
   const shared = params.get("prompt");
@@ -37,6 +41,17 @@ async function boot() {
     document.querySelectorAll(".tab").forEach((tab) => {
       tab.classList.toggle("active", tab.dataset.view === view);
     });
+  }
+  const model = params.get("model") || sessionStorage.getItem("model") || "";
+  if (model && state.schema.models[model]) {
+    state.model = model;
+    el("model").value = model;
+  }
+  const cats = (state.schema.baseline && state.schema.baseline.by_category) || {};
+  const category = params.get("category") || sessionStorage.getItem("category") || "";
+  if (category && cats[category]) {
+    state.category = category;
+    el("category").value = category;
   }
   const initial = shared !== null ? shared : sessionStorage.getItem("prompt");
   if (initial) {
@@ -69,6 +84,28 @@ function renderSamples() {
   });
 }
 
+function renderModels() {
+  const select = el("model");
+  const ids = Object.keys(state.schema.models || {});
+  ids.forEach((id) => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = id;
+    select.appendChild(opt);
+  });
+}
+
+function renderCategories() {
+  const select = el("category");
+  const cats = Object.keys((state.schema.baseline && state.schema.baseline.by_category) || {});
+  cats.sort().forEach((name) => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    select.appendChild(opt);
+  });
+}
+
 function wire() {
   el("run").addEventListener("click", run);
   el("prompt").addEventListener("keydown", (e) => {
@@ -91,6 +128,16 @@ function wire() {
   });
   el("only-active").addEventListener("change", (e) => {
     state.onlyActive = e.target.checked;
+    renderList();
+  });
+  el("model").addEventListener("change", (e) => {
+    state.model = e.target.value;
+    sessionStorage.setItem("model", state.model);
+    renderList();
+  });
+  el("category").addEventListener("change", (e) => {
+    state.category = e.target.value;
+    sessionStorage.setItem("category", state.category);
     renderList();
   });
   el("expand-all").addEventListener("click", () => {
@@ -226,7 +273,8 @@ function matchesFilter(f) {
   return (
     f.name.toLowerCase().includes(state.filter) ||
     f.summary.toLowerCase().includes(state.filter) ||
-    f.group_title.toLowerCase().includes(state.filter)
+    (f.group_title || "").toLowerCase().includes(state.filter) ||
+    (f.group || "").toLowerCase().includes(state.filter)
   );
 }
 
@@ -234,8 +282,234 @@ function visibleFeatures() {
   let list;
   if (state.view === "top") list = state.report.top;
   else if (state.view === "issues") list = state.report.features.filter((f) => f.status !== "ok");
+  else if (state.view === "plan") list = planVisibleFeatures();
   else list = state.report.features;
   return list.filter((f) => matchesFilter(f) && (!state.onlyActive || isActive(f) || f.status !== "ok"));
+}
+
+function featureValue(name) {
+  const f = (state.report.features || []).find((row) => row.name === name);
+  return f ? f.value : null;
+}
+
+function asNumber(value) {
+  if (value === null || value === undefined || value === "") return NaN;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function displayOf(value) {
+  if (value === null || value === undefined) return "-";
+  if (typeof value === "boolean") return value ? "true" : "false";
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) return "-";
+    if (Math.abs(value) > 0 && Math.abs(value) < 0.001) return value.toExponential(3);
+    return String(value);
+  }
+  return String(value);
+}
+
+function specRow(field, value, extra) {
+  const status = extra.status || (value === null || value === undefined ? "not_applicable" : "ok");
+  const reason = extra.reason || "";
+  return {
+    name: field.name,
+    summary: field.summary,
+    formula: field.formula,
+    why: field.why,
+    dtype: extra.dtype || "label",
+    backend: extra.backend || "model spec",
+    value,
+    display_value: extra.display_value || displayOf(value),
+    status,
+    reason,
+    status_rules: extra.status_rules || [],
+    steps: extra.steps || [],
+    spans: [],
+    lexicon_hits: [],
+    needs: extra.needs || [],
+    group_title: extra.group_title,
+    group: extra.group,
+    tier: 2,
+    rank: null,
+    rank_reason: "",
+    value_range: extra.value_range || "",
+  };
+}
+
+function modelRows() {
+  const group = (state.schema.plan_groups || []).find((g) => g.key === "model");
+  if (!group) return [];
+  const spec = state.schema.models[state.model];
+  if (!spec) return [];
+  return group.fields.map((field) => {
+    const value = spec[field.name];
+    const missing = value === null || value === undefined;
+    return specRow(field, missing ? null : value, {
+      group: "model",
+      group_title: "Model / configuration",
+      status: missing ? "unavailable" : "ok",
+      reason: missing
+        ? "this eval did not store a value (API default, or unpublished on the model card)"
+        : "",
+      steps: missing ? [] : [`${field.name} = ${displayOf(value)} for ${state.model}`],
+    });
+  });
+}
+
+function interactionRows() {
+  const group = (state.schema.plan_groups || []).find((g) => g.key === "interaction");
+  if (!group || !state.model) return [];
+  const spec = state.schema.models[state.model];
+  if (!spec) return [];
+  const byName = Object.fromEntries(group.fields.map((f) => [f.name, f]));
+  const tokens = asNumber(featureValue("context_token_count"));
+  const window = asNumber(spec.context_window_tokens);
+  const year = asNumber(featureValue("year_max"));
+  const cutoff = asNumber(spec.knowledge_cutoff_year);
+  const cap = asNumber(spec.max_tokens_requested);
+
+  const pressureOk = Number.isFinite(tokens) && Number.isFinite(window) && window > 0;
+  const pressure = pressureOk ? tokens / window : null;
+  const recencyOk = Number.isFinite(year) && Number.isFinite(cutoff);
+  const recency = recencyOk ? year - cutoff : null;
+  const outOk = Number.isFinite(cap) && cap > 0;
+  const output = outOk ? 1 : null;
+
+  return [
+    specRow(byName.context_pressure, pressure, {
+      group: "interaction",
+      group_title: "Interaction",
+      dtype: "float",
+      backend: "derived",
+      status: pressureOk ? "ok" : "not_applicable",
+      reason: pressureOk ? "" : "needs context_token_count and a published context window",
+      steps: pressureOk
+        ? [`context_token_count = ${tokens}`, `context_window_tokens = ${window}`, `pressure = ${tokens} / ${window} = ${displayOf(pressure)}`]
+        : [],
+      needs: ["context_token_count", "context_window_tokens"],
+    }),
+    specRow(byName.recency_gap, recency, {
+      group: "interaction",
+      group_title: "Interaction",
+      dtype: "float",
+      backend: "derived",
+      status: recencyOk ? "ok" : "not_applicable",
+      reason: recencyOk
+        ? ""
+        : "needs a year in the prompt (year_max) and a published knowledge cutoff",
+      steps: recencyOk
+        ? [`year_max = ${year}`, `knowledge_cutoff_year = ${cutoff}`, `gap = ${year} - ${cutoff} = ${recency}`]
+        : [],
+      needs: ["year_max", "knowledge_cutoff_year"],
+    }),
+    specRow(byName.output_pressure, output, {
+      group: "interaction",
+      group_title: "Interaction",
+      dtype: "float",
+      backend: "derived",
+      status: outOk ? "unreliable" : "not_applicable",
+      reason: outOk
+        ? "every model on this list requested 1024 tokens, so this is always 1"
+        : "no output cap on the spec",
+      steps: outOk ? [`max_tokens_requested = ${cap}`, `output_pressure = ${cap} / ${cap} = 1`] : [],
+      needs: ["max_tokens_requested"],
+    }),
+  ];
+}
+
+function planVisibleFeatures() {
+  const prompt = state.report.features || [];
+  return [...prompt, ...modelRows(), ...interactionRows()];
+}
+
+function pct(rate) {
+  if (rate === null || rate === undefined || Number.isNaN(Number(rate))) return "—";
+  return `${(Number(rate) * 100).toFixed(1)}%`;
+}
+
+function baselineCardHtml() {
+  const b = state.schema.baseline;
+  if (!b || b.overall_fail == null) return "";
+  const modelRate = state.model ? (b.by_model || {})[state.model] : null;
+  let cellRate = null;
+  if (state.model && state.category) {
+    cellRate = ((b.by_model_category || {})[state.model] || {})[state.category];
+  }
+  const catRate = state.category ? (b.by_category || {})[state.category] : null;
+  const modelNote = state.model
+    ? "Phase 3 model baseline: this model's miss rate on the 280-question grid."
+    : "Pick a model to see the model baseline that beat the prompt features.";
+  const cellNote = state.model && state.category
+    ? "The winner: this model on this subject."
+    : "Pick a subject to see model × subject.";
+  return `<section class="group plan-group">
+    <h2>Baseline</h2>
+    <p class="blurb">Not a prompt feature. Miss rate from one answer × 280 questions × 14 models. Prompt text lost to these lookups.</p>
+    <div class="summary" style="margin-bottom:12px">
+      <div class="card">
+        <div class="k">Overall</div>
+        <div class="v">${pct(b.overall_fail)}</div>
+        <div class="sub">guessing, any model</div>
+      </div>
+      <div class="card">
+        <div class="k">This model</div>
+        <div class="v">${state.model ? pct(modelRate) : "—"}</div>
+        <div class="sub">${escapeHtml(modelNote)}</div>
+      </div>
+      <div class="card">
+        <div class="k">This subject</div>
+        <div class="v">${state.category ? pct(catRate) : "—"}</div>
+        <div class="sub">${state.category ? escapeHtml(state.category) : "pick a subject"}</div>
+      </div>
+      <div class="card headline">
+        <div class="k">Model × subject</div>
+        <div class="v">${cellRate == null ? "—" : pct(cellRate)}</div>
+        <div class="sub">${escapeHtml(cellNote)}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderPlanGroups() {
+  const wanted = new Set(visibleFeatures().map((f) => f.name));
+  const plans = state.schema.plan_groups || [];
+  return plans
+    .map((plan) => {
+      if (plan.key === "prompt") {
+        const inner = (state.report.groups || [])
+          .map((group) => {
+            const members = group.features.filter((f) => wanted.has(f.name));
+            if (!members.length) return "";
+            return `<h3>${escapeHtml(group.title)} <span style="color:var(--faint)">(${members.length})</span></h3>
+              <p class="blurb">${escapeHtml(group.blurb)}</p>
+              <div class="rows">${members.map(rowHtml).join("")}</div>`;
+          })
+          .join("");
+        if (!inner) return "";
+        return `<section class="group plan-group">
+            <h2>1. ${escapeHtml(plan.title)}</h2>
+            <p class="blurb">${escapeHtml(plan.blurb)}</p>
+            ${inner}
+          </section>`;
+      }
+
+      const rows = plan.key === "model" ? modelRows() : interactionRows();
+      const shown = rows.filter((f) => wanted.has(f.name));
+      const needModel = !state.model;
+      const empty = needModel
+        ? `<div class="rows"><div class="nothing">Pick a model on the left to fill ${escapeHtml(plan.title)}.</div></div>`
+        : shown.length
+          ? `<div class="rows">${shown.map(rowHtml).join("")}</div>`
+          : `<div class="rows"><div class="nothing">No ${escapeHtml(plan.title).toLowerCase()} rows match this filter.</div></div>`;
+      const n = plan.key === "model" ? "2" : "3";
+      return `<section class="group plan-group">
+          <h2>${n}. ${escapeHtml(plan.title)}${shown.length ? ` <span style="color:var(--faint)">(${shown.length})</span>` : ""}</h2>
+          <p class="blurb">${escapeHtml(plan.blurb)}</p>
+          ${empty}
+        </section>`;
+    })
+    .join("");
 }
 
 function renderList() {
@@ -243,12 +517,11 @@ function renderList() {
   const features = visibleFeatures();
   const host = el("feature-list");
 
-  if (!features.length) {
+  if (state.view === "plan") {
+    host.innerHTML = baselineCardHtml() + renderPlanGroups();
+  } else if (!features.length) {
     host.innerHTML = `<div class="rows"><div class="nothing">No features match this filter.</div></div>`;
-    return;
-  }
-
-  if (state.view === "all") {
+  } else if (state.view === "all") {
     const wanted = new Set(features.map((f) => f.name));
     host.innerHTML = state.report.groups
       .map((group) => {

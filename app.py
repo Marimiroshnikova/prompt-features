@@ -38,6 +38,34 @@ from promptfeat.registry import GROUP_BLURBS, GROUP_TITLES, STATUS_LABELS, featu
 ROOT = Path(__file__).resolve().parent
 WEB_DIR = ROOT / "web"
 
+
+def _load_model_specs() -> dict:
+    try:
+        from experiments.model_specs import SPECS
+
+        return SPECS
+    except ImportError:
+        pass
+    path = ROOT / "experiments" / "model_specs.py"
+    if not path.is_file():
+        return {}
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("model_specs", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return getattr(mod, "SPECS", {})
+
+
+MODEL_SPECS = _load_model_specs()
+
+
+def _load_baseline() -> dict:
+    path = WEB_DIR / "baseline.json"
+    if not path.is_file():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
 # Analysis cost grows with prompt length (a 20k-char paste takes about two
 # seconds), so a public instance needs a bound to stay responsive.
 MAX_PROMPT_CHARS = int(os.environ.get("MAX_PROMPT_CHARS", "20000"))
@@ -57,6 +85,91 @@ SAMPLES = [
 ]
 
 
+# The written plan's three groups. Prompt is everything this page extracts.
+# Model and interaction need a model id; they are not in the prompt string.
+PLAN_GROUPS = [
+    {
+        "key": "prompt",
+        "title": "Prompt",
+        "blurb": "Measured from the prompt text alone. The 12 headings inside this group are the same features as All features.",
+    },
+    {
+        "key": "model",
+        "title": "Model / configuration",
+        "blurb": "Published specs for the selected model. Not in the prompt. Temperature is missing on this list.",
+        "fields": [
+            {
+                "name": "model_family",
+                "summary": "Id prefix (gemini-2.5, gemma-4, gemini-latest, …).",
+                "formula": "prefix of the model id",
+                "why": "Families differ in fail rate more than any prompt wording we measured.",
+            },
+            {
+                "name": "is_preview",
+                "summary": "Whether the model id contains preview.",
+                "formula": "'preview' in model id",
+                "why": "Preview snapshots can behave unlike the stable id with a similar name.",
+            },
+            {
+                "name": "is_open_source",
+                "summary": "Gemma yes, Gemini no.",
+                "formula": "true for Gemma ids",
+                "why": "Open weights and closed APIs are different systems, even on the same questions.",
+            },
+            {
+                "name": "max_tokens_requested",
+                "summary": "Output cap used for this eval (1024).",
+                "formula": "1024 from the GAIA inference config",
+                "why": "A short cap can truncate the letter. On this list every model has the same cap, so the column does not vary.",
+            },
+            {
+                "name": "context_window_tokens",
+                "summary": "Published input limit.",
+                "formula": "model card input window",
+                "why": "Needed to compute context pressure: prompt tokens divided by this window.",
+            },
+            {
+                "name": "knowledge_cutoff_year",
+                "summary": "Published cutoff year, or missing.",
+                "formula": "model card cutoff, else null",
+                "why": "Needed to compute recency gap against years named in the prompt.",
+            },
+            {
+                "name": "temperature",
+                "summary": "Sampling temperature.",
+                "formula": "API default; this eval did not store it",
+                "why": "Temperature changes how often the same question is missed. It is unknown here.",
+            },
+        ],
+    },
+    {
+        "key": "interaction",
+        "title": "Interaction",
+        "blurb": "Needs both the prompt and a model. Context pressure is prompt tokens over the window. Recency gap is a year in the prompt minus the model's cutoff.",
+        "fields": [
+            {
+                "name": "context_pressure",
+                "summary": "How much of the model's window the prompt uses.",
+                "formula": "context_token_count / context_window_tokens",
+                "why": "A prompt that fills the window is a different risk than the same prompt on a 1M window.",
+            },
+            {
+                "name": "recency_gap",
+                "summary": "Years between a date in the prompt and the model's cutoff.",
+                "formula": "year_max - knowledge_cutoff_year",
+                "why": "A 2026 fact on a 2025 cutoff cannot be in the weights.",
+            },
+            {
+                "name": "output_pressure",
+                "summary": "Requested output tokens over the cap.",
+                "formula": "max_tokens_requested / max_tokens_requested",
+                "why": "Would catch a too-short cap. Every model here requested 1024 of 1024, so this is always 1.",
+            },
+        ],
+    },
+]
+
+
 def schema_payload() -> dict:
     groups = []
     for key, members in features_by_group():
@@ -68,11 +181,22 @@ def schema_payload() -> dict:
                 "features": [f.name for f in members],
             }
         )
+    models = {
+        model_id: {
+            "model_id": model_id,
+            **{k: v for k, v in spec.items() if k != "spec_source"},
+            "spec_source": spec.get("spec_source"),
+        }
+        for model_id, spec in MODEL_SPECS.items()
+    }
     return {
         "feature_count": len(REGISTRY),
         "top30": TOP30_FEATURES,
         "features": [feature_declaration(f) for f in REGISTRY.values()],
         "groups": groups,
+        "plan_groups": PLAN_GROUPS,
+        "models": models,
+        "baseline": _load_baseline(),
         "status_labels": STATUS_LABELS,
         "samples": SAMPLES,
         "backends": nlp.backend_report(),

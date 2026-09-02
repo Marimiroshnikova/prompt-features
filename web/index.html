@@ -28,6 +28,14 @@
       <button id="download-csv" class="ghost" title="Download one row of values">CSV</button>
       <button id="download-report" class="ghost" title="Download the full calculation report">Report</button>
     </div>
+    <label class="label" for="model" style="margin-top:14px">Model — fills groups 2 and 3, and the baseline</label>
+    <select id="model">
+      <option value="">Prompt only — pick a model for Model, Interaction, and baseline</option>
+    </select>
+    <label class="label" for="category" style="margin-top:10px">Subject — optional, for model × subject</label>
+    <select id="category">
+      <option value="">No subject</option>
+    </select>
     <div class="samples">
       <span class="label small">Try one</span>
       <div id="samples" class="chips"></div>
@@ -41,6 +49,7 @@
     <div class="toolbar">
       <div class="tabs">
         <button class="tab active" data-view="top">Top 30</button>
+        <button class="tab" data-view="plan">3 groups</button>
         <button class="tab" data-view="all">All features</button>
         <button class="tab" data-view="issues">Not computed</button>
       </div>
@@ -53,7 +62,7 @@
   </section>
 
   <section id="empty" class="empty">
-    <p>Every number below is computed from the prompt text alone, and every number can be expanded to show exactly how it was reached.</p>
+    <p>Every number is computed from the prompt text, and can be expanded to show how it was reached. <strong>3 groups</strong> is Prompt, Model, and Interaction. Pick a model to also see the <strong>baseline</strong>: that model's miss rate on the 280-question grid.</p>
   </section>
 </main>
 

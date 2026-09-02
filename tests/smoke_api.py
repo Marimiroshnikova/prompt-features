@@ -69,6 +69,13 @@ check("GET /api/schema", status == 200)
 check("schema lists features", len(schema.get("features", [])) > 100, f"{len(schema.get('features', []))} features")
 check("schema lists 30 ranked", len(schema.get("top30", [])) == 30)
 check("schema lists groups", len(schema.get("groups", [])) >= 8)
+check("schema lists 3 plan groups", len(schema.get("plan_groups", [])) == 3)
+check(
+    "plan groups are prompt / model / interaction",
+    [g.get("key") for g in schema.get("plan_groups", [])] == ["prompt", "model", "interaction"],
+)
+check("schema lists models", len(schema.get("models", [])) >= 1)
+check("schema has model baseline", "overall_fail" in (schema.get("baseline") or {}))
 first = schema["features"][0]
 for field in ("name", "group", "dtype", "summary", "formula", "why"):
     check(f"schema field {field}", bool(first.get(field)))
