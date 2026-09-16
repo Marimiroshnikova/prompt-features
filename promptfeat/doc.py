@@ -91,6 +91,57 @@ _NUMERAL_RE = re.compile(
     r"(?!\w)"
 )
 _YEAR_RE = re.compile(r"(?<![\w.])((?:1[0-9]|20)\d{2})(?:s)?(?!\w)")
+# _YEAR_RE only finds candidates. A four-digit number in that range is usually a
+# quantity, not a date - exam items are full of "1000 \AA thick" and "1500 ways"
+# - so find_years keeps a candidate only when its context marks it as a date.
+_DECADE_SUFFIX_RE = re.compile(r"\d{4}s\Z")
+_ERA_AFTER_RE = re.compile(
+    r"(?i)[\s,]*(?:b\.?\s?c\.?(?:\s?e\.?)?|c\.?\s?e\.?|a\.?\s?d\.?)(?![a-z])"
+)
+_DATE_CUE_BEFORE_RE = re.compile(
+    r"(?i)\b(?:in|on|since|before|after|during|until|till|through|throughout|"
+    r"between|from|circa|around|late|early|mid|year|years|yr|"
+    r"winter|spring|summer|autumn|fall|"
+    r"published|founded|established|born|died|signed|ratified|enacted|adopted|"
+    r"revised|copyright|census|edition|as\s+of|prior\s+to)"
+    r"[\s,]*(?:the\s+)?\Z"
+)
+_MONTH_NAME_RE = re.compile(
+    r"(?i)\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?"
+)
+# An academic citation dates a claim: "Mulholland (1998) argued", "Esman (1972)".
+# The surname has to look like a name so that f(1000) stays a function call.
+_CITATION_BEFORE_RE = re.compile(
+    r"\b[A-Z][a-z]{2,}(?:\s*(?:et\s+al\.?|&|and)\s*(?:[A-Z][a-z]{2,})?)?\s*\(\s*\Z"
+)
+# A source line under a quoted document dates it: "Bureau of Refugees ..., 1865".
+# The comma has to follow a word rather than a digit, so that a list of numbers
+# ending in a line break is not read as a date.
+_ATTRIBUTION_BEFORE_RE = re.compile("[A-Za-z][^\\d\n]{0,60},[\"'\u201d\u2019)\\]]*[ \t]*\\Z")
+_LINE_END_AFTER_RE = re.compile(r"[\s.]*(?:[\r\n]|\Z)")
+# `in` is deliberately absent: as a unit it means inches, but after a real year
+# it is far more often the preposition ("since 1990 in Germany").
+_UNIT_WORD = (
+    r"\\?AA|Å|angstroms?|nm|[µu]m|mm|cm|dm|km|m|met(?:re|er)s?|ft|feet|inch(?:es)?|"
+    r"mi|miles?|yd|yards?|[mµu]?g|kg|lbs?|oz|tons?|tonnes?|"
+    r"[mµu]?[lL]|lit(?:re|er)s?|gal|"
+    r"[kMG]?Hz|s|secs?|seconds?|ms|[µu]s|ns|ps|mins?|minutes?|hrs?|h|hours?|"
+    r"days?|weeks?|months?|"
+    r"K|deg|degrees?|rad|sr|"
+    r"[mkM]?[VWJAN]|eV|[kM]eV|cal|kcal|BTU|Pa|[kM]Pa|psi|atm|bars?|torr|"
+    r"mol|moles?|[mµu]?M|ohms?|Ω|F|T|Wb|lm|lx|Bq|Gy|Sv|dB|rpm|"
+    r"bytes?|bits?|[kKMG]B|px|%|percent"
+)
+# Horizontal space only: a unit sits on the same line as its number, so "1774"
+# at the end of a line is not amperes just because the next line starts with A.
+_UNIT_AFTER_RE = re.compile(rf"(?i)[ \t]*(?:{_UNIT_WORD})(?![A-Za-z])")
+_MATH_BEFORE_RE = re.compile(r"[=+*/^×÷<>±$€£¥]\s*\Z")
+# "1332-1346 C.E." marks only the second year, so a range lends its evidence to
+# the other side.
+_YEAR_PAIR_RE = re.compile(
+    r"(?<![\w.])((?:1[0-9]|20)\d{2})s?\s*(?:[-–—]|to|and|through|until|till)\s*"
+    r"((?:1[0-9]|20)\d{2})s?(?!\w)"
+)
 _PERCENT_RE = re.compile(
     r"(?<![\w.])\d+(?:\.\d+)?\s*(?:%|percent\b|per cent\b|pct\b)|\b\d+\s*(?:percentage points?)\b"
 )
@@ -463,6 +514,47 @@ def _rough_sentences(text: str) -> list[Sentence]:
             start = idx + (len(piece) - len(piece.lstrip()))
             sents.append(Sentence(text=body, start=start, end=start + len(body)))
     return sents
+
+
+def find_years(text: str) -> list[tuple[int, int, int]]:
+    """Four-digit years used as dates, as (value, start, end) triples.
+
+    A candidate from _YEAR_RE is kept only when a decade suffix, an era marker,
+    a nearby month name or a date cue word marks it as a date, and it is dropped
+    when a unit of measurement follows it or an operator precedes it. Years
+    written B.C.E. are still reported as positive numbers.
+    """
+    candidates: dict[int, tuple[int, int, int]] = {}
+    kept: dict[int, tuple[int, int, int]] = {}
+    for match in _YEAR_RE.finditer(text):
+        start, end = match.start(), match.end()
+        candidates[start] = (int(match.group(1)), start, end)
+        if _DECADE_SUFFIX_RE.search(match.group(0)):
+            kept[start] = candidates[start]
+            continue
+        before = text[max(0, start - 40):start]
+        if _UNIT_AFTER_RE.match(text, end) or _MATH_BEFORE_RE.search(before):
+            continue
+        after = text[end:end + 16]
+        if (
+            _ERA_AFTER_RE.match(text, end)
+            or _DATE_CUE_BEFORE_RE.search(before)
+            or _CITATION_BEFORE_RE.search(before)
+            or _MONTH_NAME_RE.search(before[-16:])
+            or _MONTH_NAME_RE.search(after)
+            or (
+                _ATTRIBUTION_BEFORE_RE.search(before)
+                and _LINE_END_AFTER_RE.match(text, end)
+            )
+        ):
+            kept[start] = candidates[start]
+    for pair in _YEAR_PAIR_RE.finditer(text):
+        sides = (pair.start(1), pair.start(2))
+        if any(side in kept for side in sides):
+            for side in sides:
+                if side in candidates:
+                    kept[side] = candidates[side]
+    return [kept[pos] for pos in sorted(kept)]
 
 
 def build(prompt: str) -> PromptDoc:

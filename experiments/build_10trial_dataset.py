@@ -1,16 +1,7 @@
-"""One Excel workbook holding the whole Phase 1 + Phase 2 dataset.
+"""One Excel workbook: one row per question x model.
 
-Contents follow the plan's Phase 2 grouping:
-
-  Prompt features        the Top 30 ranked on the 10-trial label
-                         (experiments/out/tentrial_top30.csv)
-  Model / configuration  published specs for the 3 models, from model_specs.py
-  Interaction features   context_pressure, output_pressure, recency_gap,
-                         task type x model id, complexity x capability
-
-The run grid is 280 MMLU-Pro questions x 3 Gemini models x 10 answers.
-Both shapes of the same data are written: one row per question (Questions_Wide)
-and one row per question x model (Runs_Long).
+Each row has the question, that model's 10-run letters, all corpus/prompt
+features, exam-trap flags, and that model's specs.
 """
 
 from __future__ import annotations
@@ -360,8 +351,12 @@ def group_of(col: str, feat_order: list[str]) -> str:
         return "interaction"
     if col in feat_order:
         return "prompt"
-    if col in ("n_correct", "n_fail", "n_blank", "fail_rate", "q_fail_rate",
-               "total_correct_of_30") or col.endswith(("_n_correct", "_fail_rate")):
+    if (
+        col in ("n_correct", "n_fail", "n_blank", "fail_rate", "q_fail_rate",
+                "total_correct_of_30")
+        or col.endswith(("_n_correct", "_fail_rate"))
+        or (col.startswith("it_") and col[3:].isdigit())
+    ):
         return "outcome"
     return "identity"
 
@@ -385,89 +380,187 @@ def style(ws, df: pd.DataFrame, feat_order: list[str], freeze: str,
     ws.auto_filter.ref = ws.dimensions
 
 
+def all_question_features() -> tuple[pd.DataFrame, list[str]]:
+    """Every corpus/promptfeat value plus exam-trap flags, one row per question."""
+    feat = pd.read_csv(OUT / "mmlu_prompt_features.csv", low_memory=False)
+    exam = pd.read_csv(OUT / "mmlu_exam_features.csv", low_memory=False)
+    exam = exam.drop(columns=[c for c in ("q_fail", "category") if c in exam.columns])
+    # promptfeat measures the exam traps itself now, so the separate exam table
+    # only contributes what the main extraction does not already have.
+    exam = exam.drop(
+        columns=[c for c in exam.columns if c != "question_id" and c in feat.columns]
+    )
+    src = feat.merge(exam, on="question_id", how="left")
+    order = [
+        c
+        for c in src.columns
+        if c.startswith("f_") and not c.endswith(("__status", "__reason"))
+    ]
+    return src[["question_id", *order]].copy(), order
+
+
+def question_model_rows() -> tuple[pd.DataFrame, list[str], pd.DataFrame]:
+    """One row per question x model: question, 10-run results, all features, model specs."""
+    top30 = load_top30()
+    qfeat, feat_order = all_question_features()
+    sample = pd.read_csv(REPO / "data" / "mmlu_pro_sample_20_per_category.csv")
+    meta = sample[
+        ["question_id", "category", "question", "options", "answer"]
+    ].rename(
+        columns={"category": "question_category", "answer": "correct_answer"}
+    )
+    questions = meta.merge(qfeat, on="question_id", how="left")
+    if len(questions) != 280:
+        raise ValueError(f"expected 280 questions, got {len(questions)}")
+
+    res = pd.read_csv(OUT / "reduced_10trial.csv", low_memory=False)
+    res["question_id"] = res["question_id"].astype(int)
+    trial_cols = [f"it_{i}" for i in range(1, N_TRIALS + 1)]
+    for i, col in enumerate(trial_cols):
+        res[col] = res["answers"].astype(str).str[i]
+    res["n_fail"] = N_TRIALS - res["n_correct"]
+    runs = res[
+        ["question_id", "llm_model", *trial_cols, "n_correct", "n_fail", "n_blank", "fail_rate"]
+    ]
+    if len(runs) != 280 * runs["llm_model"].nunique():
+        raise ValueError(f"expected a full question x model grid, got {len(runs)}")
+
+    grid = runs.merge(questions, on="question_id", how="left")
+    grid = attach_model_and_interaction(grid)
+    grid = grid.sort_values(["question_id", "llm_model"]).reset_index(drop=True)
+
+    front = [
+        "question_id",
+        "question_category",
+        "question",
+        "options",
+        "correct_answer",
+        "llm_model",
+        *trial_cols,
+        "n_correct",
+        "n_fail",
+        "n_blank",
+        "fail_rate",
+    ]
+    cols = front + feat_order + MODEL_COLS + INTERACTION_COLS
+    missing = [c for c in cols if c not in grid.columns]
+    if missing:
+        raise KeyError(f"missing columns: {missing}")
+    return booleans_to_01(grid[cols]), feat_order, top30
+
+
+def questions_readme(n_rows: int, n_models: int) -> pd.DataFrame:
+    lines = [
+        ("What this file is",
+         f"280 questions x {n_models} models = {n_rows} rows."),
+        ("Row shape",
+         "Question 1 + model 1, question 1 + model 2, question 1 + model 3, then question 2..."),
+        ("Run results",
+         "it_1..it_10 are the 10 letters that model gave. "
+         "n_correct / n_fail / fail_rate summarize them. '-' means the reply did not parse."),
+        ("Corpus / prompt features",
+         "All original promptfeat measurements (size, rarity/Zipf, anchors, temporal, "
+         "ambiguity, ...). These are the retrieval-corpus features. "
+         "Plus exam-trap flags. Same values repeat on the 3 rows of one question."),
+        ("Model features",
+         "Specs for the model on this row only."),
+        ("Sheet: Questions", "The dataset."),
+        ("Sheet: Feature_Dictionary", "What each column means. Top-30 rank is noted where it exists."),
+    ]
+    return pd.DataFrame(lines, columns=["item", "detail"])
+
+
+# Columns that come from the sample CSV rather than the promptfeat registry, so
+# the registry has no summary to lend them.
+OFF_REGISTRY_MEANING = {
+    "f_n_options": "how many lettered options the item prints, counted from the "
+                   "sample CSV",
+}
+
+
+def feature_dictionary(top30: pd.DataFrame, feat_order: list[str]) -> pd.DataFrame:
+    ident = [
+        ("question_id", "MMLU-Pro question id"),
+        ("question_category", "subject"),
+        ("question", "question stem"),
+        ("options", "lettered choices as a JSON list"),
+        ("correct_answer", "gold letter"),
+        ("llm_model", "which model produced it_1..it_10 on this row"),
+        ("it_1 ... it_10", "letter returned on each of 10 calls; '-' if unparsed"),
+        ("n_correct", "how many of the 10 matched the gold letter"),
+        ("n_fail", "10 minus n_correct; unparsed counts as wrong"),
+        ("n_blank", "how many of the 10 did not parse to a letter"),
+        ("fail_rate", "n_fail / 10 for this question x model"),
+    ]
+    rows = [
+        {"group": "Question and run", "column": c, "rank": None, "what it measures": m}
+        for c, m in ident
+    ]
+    sys.path.insert(0, str(REPO))
+    from promptfeat.registry import GROUP_TITLES, REGISTRY  # noqa: WPS433
+
+    ranked = {str(r.column): int(r.rank) for r in top30.itertuples(index=False)}
+    for col in feat_order:
+        raw = col[2:] if col.startswith("f_") else col
+        parent = raw.split("=", 1)[0]
+        feat = REGISTRY.get(parent)
+        group = (
+            f"Corpus / {GROUP_TITLES.get(feat.group, feat.group)}"
+            if feat is not None
+            else "Corpus / prompt features"
+        )
+        if parent.startswith("is_") or parent in {
+            "stem_word_count", "mc_option_count", "option_mean_chars",
+            "option_length_spread", "has_escape_option", "n_options",
+        }:
+            group = "Exam-item traps"
+        summary = feat.summary if feat is not None else OFF_REGISTRY_MEANING.get(col, "")
+        rank = ranked.get(col)
+        if rank is None:
+            hits = [k for k in ranked if k.startswith(f"f_{parent}=")]
+            rank = ranked[hits[0]] if len(hits) == 1 else None
+        rows.append({
+            "group": group,
+            "column": col,
+            "rank": rank,
+            "what it measures": summary,
+        })
+    full = dictionary(top30, feat_order)
+    extra = full[full["group"].isin(
+        ["Model / configuration features", "Interaction features"]
+    )][["group", "column", "rank", "what it measures"]]
+    return pd.concat([pd.DataFrame(rows), extra], ignore_index=True)
+
+
 def main() -> None:
-    d = build()
-    long, wide, top30 = d["long"], d["wide"], d["top30"]
-    feat_order, models = d["feat_order"], d["models"]
-    fdict = dictionary(top30, feat_order)
-    specs = model_sheet(models)
-    rd = readme(long, wide)
+    qs, feat_order, top30 = question_model_rows()
+    fdict = feature_dictionary(top30, feat_order)
+    n_models = int(qs["llm_model"].nunique())
+    rd = questions_readme(len(qs), n_models)
 
     with pd.ExcelWriter(DEST, engine="openpyxl") as xl:
         rd.to_excel(xl, sheet_name="README", index=False)
-        wide.to_excel(xl, sheet_name="Questions_Wide", index=False)
-        long.to_excel(xl, sheet_name="Runs_Long", index=False)
+        qs.to_excel(xl, sheet_name="Questions", index=False)
         fdict.to_excel(xl, sheet_name="Feature_Dictionary", index=False)
-        specs.to_excel(xl, sheet_name="Model_Specs", index=False)
 
         wb = xl.book
-        style(wb["Questions_Wide"], wide, feat_order, "D2",
-              {"question_stem": 70})
-        style(wb["Runs_Long"], long, feat_order, "E2", {"question_stem": 70})
+        style(wb["Questions"], qs, feat_order, "G2",
+              {"question": 70, "options": 40, "llm_model": 26})
         style(wb["Feature_Dictionary"], fdict, feat_order, "A2",
-              {"group": 30, "column": 34, "what it measures": 80, "direction": 24})
-        style(wb["Model_Specs"], specs, feat_order, "B2", {"spec_source": 70})
+              {"group": 28, "column": 34, "what it measures": 80})
 
         ws = wb["README"]
-        ws.column_dimensions["A"].width = 34
-        ws.column_dimensions["B"].width = 100
+        ws.column_dimensions["A"].width = 28
+        ws.column_dimensions["B"].width = 90
         for row in ws.iter_rows():
             for c in row:
                 c.font = Font(name=FONT, size=10)
                 c.alignment = Alignment(vertical="top", wrap_text=True)
-        headings = {"MMLU-Pro miss-prediction dataset", "SHEETS",
-                    "FEATURE GROUPS (plan Phase 2)", "READ BEFORE MODELLING"}
-        for row in ws.iter_rows(min_col=1, max_col=1):
-            if row[0].value in headings:
-                for c in ws[row[0].row]:
-                    c.font = Font(name=FONT, size=11, bold=True)
         ws.sheet_view.showGridLines = False
 
-        # ---- Summary: formulas over Runs_Long so it recalculates --------- #
-        sm = wb.create_sheet("Summary")
-        n = len(long) + 1
-        mcol = get_column_letter(long.columns.get_loc("llm_model") + 1)
-        ccol = get_column_letter(long.columns.get_loc("question_category") + 1)
-        fcol = get_column_letter(long.columns.get_loc("n_fail") + 1)
-        kcol = get_column_letter(long.columns.get_loc("n_correct") + 1)
-        rng = lambda c: f"Runs_Long!${c}$2:${c}${n}"  # noqa: E731
-
-        sm["A1"] = "Fail rate by model"
-        sm.append([])
-        sm["A2"], sm["B2"], sm["C2"], sm["D2"] = "model", "wrong", "answers", "fail rate"
-        for i, m in enumerate(models, start=3):
-            sm[f"A{i}"] = m
-            sm[f"B{i}"] = f'=SUMIF({rng(mcol)},$A{i},{rng(fcol)})'
-            sm[f"C{i}"] = (f'=SUMIF({rng(mcol)},$A{i},{rng(fcol)})'
-                           f'+SUMIF({rng(mcol)},$A{i},{rng(kcol)})')
-            sm[f"D{i}"] = f"=IFERROR(B{i}/C{i},\"\")"
-        start = 3 + len(models) + 1
-        sm[f"A{start}"] = "Fail rate by subject"
-        sm[f"A{start + 1}"], sm[f"B{start + 1}"] = "subject", "wrong"
-        sm[f"C{start + 1}"], sm[f"D{start + 1}"] = "answers", "fail rate"
-        for i, c in enumerate(sorted(long.question_category.unique()), start=start + 2):
-            sm[f"A{i}"] = c
-            sm[f"B{i}"] = f'=SUMIF({rng(ccol)},$A{i},{rng(fcol)})'
-            sm[f"C{i}"] = (f'=SUMIF({rng(ccol)},$A{i},{rng(fcol)})'
-                           f'+SUMIF({rng(ccol)},$A{i},{rng(kcol)})')
-            sm[f"D{i}"] = f"=IFERROR(B{i}/C{i},\"\")"
-        sm.column_dimensions["A"].width = 30
-        for col in "BCD":
-            sm.column_dimensions[col].width = 12
-        for row in sm.iter_rows():
-            for c in row:
-                c.font = Font(name=FONT, size=10)
-                if c.column_letter == "D":
-                    c.number_format = "0.0%"
-        for r in (1, 2, start, start + 1):
-            for c in sm[r]:
-                c.font = Font(name=FONT, size=10, bold=True)
-        sm.sheet_view.showGridLines = False
-
     print(f"wrote {DEST}")
-    print(f"  Questions_Wide {wide.shape}   Runs_Long {long.shape}")
-    print(f"  feature columns: {len(feat_order)} prompt, {len(MODEL_COLS)} model, "
-          f"{len(INTERACTION_COLS)} interaction")
+    print(f"  Questions {qs.shape}  ({qs.question_id.nunique()} questions x "
+          f"{n_models} models; 10-run letters + corpus features)")
 
 
 if __name__ == "__main__":

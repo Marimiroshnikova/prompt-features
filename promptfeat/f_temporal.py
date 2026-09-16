@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 from . import lexicons as lex
-from .doc import _DATE_LIKE_RE, _YEAR_RE
+from .doc import _DATE_LIKE_RE, find_years
 from .registry import not_applicable, ok, register, span
 from .util import quote_list
 
+_YEAR_RULE = (
+    "a four-digit number from 1000 to 2099 that its context marks as a date: a "
+    "decade (1990s), an era marker (1346 C.E.), a nearby month name, an academic "
+    "citation (Esman (1972)), a source line under a quoted document (..., 1865), "
+    "or a date cue word before it (in, since, during, between, published, "
+    "founded ...). A "
+    "bare number in that range is read as a quantity, not a year, and one "
+    "followed by a unit (1000 \\AA) never counts"
+)
+
 
 def _years(doc) -> list[tuple[int, int, int]]:
-    found = []
-    for match in _YEAR_RE.finditer(doc.text):
-        found.append((int(match.group(1)), match.start(), match.end()))
-    return found
+    return find_years(doc.text)
 
 
 def _temporal_matches(doc) -> dict[str, list[dict]]:
@@ -40,9 +47,8 @@ def _temporal_matches(doc) -> dict[str, list[dict]]:
     formula=(
         "true if any of these match: the temporal-range lexicon (before, after, since, "
         "until, between, during, prior to, over the past ...), the relative-recency "
-        "lexicon (latest, current, recent, as of ...), a four-digit year from 1000 to "
-        "2099 including decades like 1990s, a month or weekday name, or a date pattern "
-        "such as 2023-04-01, 4/1/23 or Q3 2024"
+        "lexicon (latest, current, recent, as of ...), " + _YEAR_RULE + ", a month or "
+        "weekday name, or a date pattern such as 2023-04-01, 4/1/23 or Q3 2024"
     ),
     why="The right topic with the wrong date is one of the most common retrieval misses.",
     value_range="True / False",
@@ -155,7 +161,7 @@ def has_relative_recency(doc, ctx):
     group="temporal",
     dtype="int",
     summary="How many four-digit years the prompt names.",
-    formula=r"count of matches of (1[0-9]|20)\d\d, optionally followed by s for decades",
+    formula="count of " + _YEAR_RULE,
     why="Years are exact filters; a chunk about the right subject in the wrong year does not answer the question.",
     value_range=">= 0",
     example="Compare sales between 2019 and 2023",

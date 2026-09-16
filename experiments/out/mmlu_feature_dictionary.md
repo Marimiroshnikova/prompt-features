@@ -1,7 +1,10 @@
 # Phase 2 feature dictionary
 
-Features are attached to the **run results** in `pilot_results.csv`
-(same file at repo root and `experiments/out/`).
+Open `pilot_results.csv`: one row = one question + one model.
+Columns start with the question text, gold letter, both answers,
+then model specs, interaction features, then every `f_*` measurement.
+`questions_with_features.csv` is the same 280 questions once each
+(features only, no per-model answers).
 Only information available before generation is used.
 
 Run grid: 280 questions × 14 models × **2** answers (`results_n2.csv`).

@@ -24,12 +24,54 @@ from build_mmlu_pilot import attach_specs  # noqa: E402
 
 OUT = Path(__file__).resolve().parent / "out"
 RUNS = REPO / "results_n2.csv"
+SAMPLE = REPO / "data" / "mmlu_pro_sample_20_per_category.csv"
 PROMPT_FEATS = OUT / "mmlu_prompt_features.csv"
 EXAM_FEATS = OUT / "mmlu_exam_features.csv"
 DEST_ROOT = REPO / "pilot_results.csv"
 DEST_OUT = OUT / "pilot_results.csv"
+DEST_QUESTIONS = REPO / "questions_with_features.csv"
 DICT_PATH = OUT / "mmlu_feature_dictionary.md"
 MAX_GEN_TOKENS = 1024
+
+FRONT = [
+    "question_id",
+    "question_category",
+    "question",
+    "options",
+    "correct_answer",
+    "llm_model",
+    "it_1_ans",
+    "it_1_raw",
+    "it_2_ans",
+    "it_2_raw",
+    "it_1_parse_ok",
+    "it_2_parse_ok",
+    "correct_answered_num",
+    "accuracy",
+    "risk_target",
+    "flip",
+    "n_trials",
+]
+MODEL_BLOCK = [
+    "model_family",
+    "is_preview",
+    "is_open_source",
+    "has_custom_tools",
+    "context_window_tokens",
+    "knowledge_cutoff_year",
+    "max_tokens_requested",
+    "output_token_limit",
+    "temperature",
+    "top_p",
+    "spec_source",
+]
+INTER_BLOCK = [
+    "f_context_pressure",
+    "f_output_pressure",
+    "f_recency_gap",
+    "model_x_category",
+    "f_complexity_x_capability",
+]
 
 
 def _prompt_value_cols(feats: pd.DataFrame) -> list[str]:
@@ -44,6 +86,12 @@ def main() -> None:
     runs = pd.read_csv(RUNS, low_memory=False)
     if len(runs) != 280 * 14:
         raise ValueError(f"expected 3920 run rows, got {len(runs)}")
+
+    sample = pd.read_csv(SAMPLE)
+    questions = sample[["question_id", "question"]].drop_duplicates("question_id")
+    runs = runs.merge(questions, on="question_id", how="left", validate="many_to_one")
+    if runs["question"].isna().any():
+        raise ValueError("sample CSV missed some question_id")
 
     prompt = pd.read_csv(PROMPT_FEATS, low_memory=False)
     pcols = ["question_id"] + _prompt_value_cols(prompt)
@@ -85,9 +133,27 @@ def main() -> None:
 
     rows["risk_target"] = 1.0 - rows["accuracy"].astype(float)
 
+    feat_cols = [c for c in rows.columns if c.startswith("f_") and c not in INTER_BLOCK]
+    ordered = (
+        [c for c in FRONT if c in rows.columns]
+        + [c for c in MODEL_BLOCK if c in rows.columns]
+        + [c for c in INTER_BLOCK if c in rows.columns]
+        + feat_cols
+    )
+    leftover = [c for c in rows.columns if c not in ordered and c != "prompt"]
+    rows = rows[ordered + leftover]
+
     rows.to_csv(DEST_ROOT, index=False)
     OUT.mkdir(parents=True, exist_ok=True)
     rows.to_csv(DEST_OUT, index=False)
+
+    q_keep = ["question_id", "question_category", "question", "options", "correct_answer"]
+    q_keep += [c for c in rows.columns if c.startswith("f_") and c not in INTER_BLOCK]
+    q_keep += [c for c in exam.columns if c.startswith("f_") and c in rows.columns]
+    q_keep = list(dict.fromkeys(q_keep))
+    one_q = rows.drop_duplicates("question_id")[q_keep]
+    one_q.to_csv(DEST_QUESTIONS, index=False)
+    print(f"wrote {DEST_QUESTIONS}  {one_q.shape}")
 
     n_prompt = len(_prompt_value_cols(prompt)) + len(
         [c for c in exam.columns if c.startswith("f_")]
@@ -97,8 +163,11 @@ def main() -> None:
             [
                 "# Phase 2 feature dictionary",
                 "",
-                "Features are attached to the **run results** in `pilot_results.csv`",
-                "(same file at repo root and `experiments/out/`).",
+                "Open `pilot_results.csv`: one row = one question + one model.",
+                "Columns start with the question text, gold letter, both answers,",
+                "then model specs, interaction features, then every `f_*` measurement.",
+                "`questions_with_features.csv` is the same 280 questions once each",
+                "(features only, no per-model answers).",
                 "Only information available before generation is used.",
                 "",
                 "Run grid: 280 questions × 14 models × **2** answers (`results_n2.csv`).",

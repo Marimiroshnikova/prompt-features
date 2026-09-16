@@ -222,6 +222,78 @@ class TestRegressionsFromTheOldImplementation(unittest.TestCase):
                 self.assertEqual(result_of(prompt, "requested_item_count").status, NOT_APPLICABLE)
 
 
+class TestYearDetection(unittest.TestCase):
+    """A four-digit number is only a year when its context says so."""
+
+    def test_a_quantity_with_a_unit_is_not_a_year(self):
+        prompt = (
+            "Find the phase difference between light reflected from a deposit of "
+            "magnesium fluoride (n = 1.38) 1000 \\AA thick on a lens surface."
+        )
+        self.assertEqual(value_of(prompt, "year_count"), 0)
+        self.assertEqual(result_of(prompt, "year_max").status, NOT_APPLICABLE)
+
+    def test_a_bare_number_in_an_option_list_is_not_a_year(self):
+        prompt = (
+            "In how many ways can a committee of 2 men and 3 women be selected "
+            "from a group of 6 men and 8 women?\nA. 1500\nB. 1120\nC. 1680"
+        )
+        self.assertEqual(value_of(prompt, "year_count"), 0)
+
+    def test_a_cue_word_makes_it_a_year(self):
+        self.assertEqual(value_of("What happened in 2020?", "year_count"), 1)
+        self.assertEqual(value_of("Sales since 1998 have risen.", "year_max"), 1998)
+
+    def test_a_decade_is_a_year(self):
+        self.assertEqual(value_of("Gunpowder use in the 1200s and 1400s.", "year_count"), 2)
+
+    def test_an_era_marker_carries_a_range(self):
+        prompt = "Ibn Battuta, Voyages, 1332\u20131346 C.E. describes Hangzhou."
+        self.assertEqual(value_of(prompt, "year_count"), 2)
+        self.assertEqual(value_of(prompt, "year_min"), 1332)
+        self.assertEqual(value_of(prompt, "year_max"), 1346)
+
+    def test_a_range_keeps_both_ends(self):
+        prompt = "Compare sales between 2019 and 2023."
+        self.assertEqual(value_of(prompt, "year_span"), 4)
+
+    def test_an_arithmetic_operand_is_not_a_year(self):
+        self.assertEqual(value_of("Compute 4000 / 1250 exactly.", "year_count"), 0)
+
+    def test_a_citation_year_counts(self):
+        prompt = "Mulholland (1998) argued that privatization changed the relationship."
+        self.assertEqual(value_of(prompt, "year_max"), 1998)
+
+    def test_a_function_call_is_not_a_citation(self):
+        self.assertEqual(value_of("Evaluate f(1024) for the given series.", "year_count"), 0)
+
+    def test_a_source_line_dates_a_quoted_document(self):
+        prompt = (
+            '"Wherever I go the street, the shop, the house."\n'
+            "Commissioner, Bureau of Refugees, Freedmen and Abandoned Lands, 1865\n"
+            "Which of the following best describes the speaker?"
+        )
+        self.assertEqual(value_of(prompt, "year_max"), 1865)
+
+    def test_a_number_list_ending_a_line_is_not_a_source_line(self):
+        self.assertEqual(value_of("Order the values 4, 9, 1024\nthen explain.", "year_count"), 0)
+
+    def test_a_source_line_survives_a_quoted_title(self):
+        prompt = (
+            "The camps were a place of memory.\n"
+            'Elie Wiesel, "Reflections of a Survivor," 1987\n'
+            "From the passage, one may infer that the author"
+        )
+        self.assertEqual(value_of(prompt, "year_max"), 1987)
+
+    def test_an_option_letter_on_the_next_line_is_not_a_unit(self):
+        prompt = (
+            "Address attributed to Logan, an Indian leader, 1774\n"
+            "A sympathetic reader would conclude which of the following?"
+        )
+        self.assertEqual(value_of(prompt, "year_max"), 1774)
+
+
 class TestStatusRules(unittest.TestCase):
     """A feature that cannot be measured must say so, not return zero."""
 
