@@ -93,7 +93,10 @@ def load() -> tuple[pd.DataFrame, pd.DataFrame]:
     ]].copy()
 
     fcols = [c for c in feat.columns if c.startswith("f_")]
-    ecols = [c for c in exam.columns if c.startswith("f_")]
+    # promptfeat measures the exam traps itself now, so taking them from the exam
+    # table as well would test the same column twice and inflate the BH
+    # correction.
+    ecols = [c for c in exam.columns if c.startswith("f_") and c not in fcols]
     qfeat = feat[["question_id", *fcols]].merge(
         exam[["question_id", *ecols]], on="question_id", how="left"
     )

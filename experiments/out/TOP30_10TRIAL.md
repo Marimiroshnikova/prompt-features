@@ -50,24 +50,24 @@ stability; `models` is how many of the 3 point the same way.
 | 10 | `rare_word_count` | Rarity and vocabulary | 0.707 | +0.134 | 0.39 | 3/5 | 3/3 | — |
 | 11 | `oov_like_count` | Rarity and vocabulary | 0.666 | +0.122 | 0.53 | 3/5 | 3/3 | — |
 | 12 | `has_escape_option` | Exam-item traps | 0.663 | +0.119 | 0.53 | 2/5 | 3/3 | — |
-| 13 | `is_except_ask` | Exam-item traps | 0.590 | +0.100 | 0.71 | 2/5 | 3/3 | +0.231 [-0.018,+0.489] n=11 |
+| 13 | `is_except_ask` | Exam-item traps | 0.590 | +0.100 | 0.76 | 2/5 | 3/3 | +0.231 [-0.018,+0.489] n=11 |
 | 14 | `content_word_count` | Readability and lexical difficulty | 0.581 | +0.117 | 0.53 | 2/5 | 3/3 | — |
-| 15 | `question_category=Math` | Domain and register | 0.523 | -0.094 | 0.71 | 2/5 | 3/3 | — |
-| 16 | `difficult_word_count` | Readability and lexical difficulty | 0.520 | +0.099 | 0.71 | 2/5 | 3/3 | — |
-| 17 | `year_count` | Temporal constraints | 0.495 | +0.101 | 0.71 | 2/5 | 2/3 | — |
-| 18 | `is_ambiguous` | Ambiguity and underspecification | 0.486 | +0.104 | 0.71 | 1/5 | 3/3 | — |
-| 19 | `core_question_ratio` | Prompt-engineering artifacts | 0.470 | +0.102 | 0.71 | 1/5 | 3/3 | — |
-| 20 | `is_yes_no_question` | Question structure | 0.407 | +0.088 | 0.71 | 1/5 | 3/3 | — |
-| 21 | `context_token_count` | Size and shape | 0.405 | +0.093 | 0.71 | 1/5 | 3/3 | — |
-| 22 | `is_comparison` | Reasoning and multi-hop | 0.403 | +0.097 | 0.71 | 1/5 | 2/3 | +0.030 [-0.060,+0.119] n=49 |
-| 23 | `causal_flag` | Reasoning and multi-hop | 0.402 | +0.091 | 0.71 | 1/5 | 3/3 | +0.054 [-0.032,+0.140] n=62 |
-| 24 | `temporal_type=range` | Temporal constraints | 0.398 | +0.087 | 0.71 | 1/5 | 3/3 | — |
-| 25 | `is_multi_part` | Question structure | 0.396 | -0.079 | 0.74 | 1/5 | 3/3 | -0.086 [-0.171,+0.014] n=34 |
-| 26 | `contains_negation` | Reasoning and multi-hop | 0.392 | +0.085 | 0.73 | 1/5 | 3/3 | +0.046 [-0.028,+0.122] n=96 |
-| 27 | `has_relative_recency` | Temporal constraints | 0.389 | -0.055 | 0.79 | 1/5 | 3/3 | -0.105 [-0.175,-0.024] n=28 * |
-| 28 | `non_ascii_ratio` | Domain and register | 0.378 | -0.081 | 0.74 | 1/5 | 3/3 | — |
-| 29 | `jargon_ratio` | Rarity and vocabulary | 0.357 | +0.076 | 0.74 | 1/5 | 3/3 | — |
-| 30 | `type_token_ratio` | Readability and lexical difficulty | 0.347 | -0.073 | 0.74 | 1/5 | 3/3 | — |
+| 15 | `is_ambiguous` | Ambiguity and underspecification | 0.556 | +0.104 | 0.76 | 2/5 | 3/3 | — |
+| 16 | `question_category=Math` | Domain and register | 0.523 | -0.094 | 0.76 | 2/5 | 3/3 | — |
+| 17 | `difficult_word_count` | Readability and lexical difficulty | 0.520 | +0.099 | 0.76 | 2/5 | 3/3 | — |
+| 18 | `core_question_ratio` | Prompt-engineering artifacts | 0.470 | +0.102 | 0.76 | 1/5 | 3/3 | — |
+| 19 | `is_yes_no_question` | Question structure | 0.407 | +0.088 | 0.76 | 1/5 | 3/3 | — |
+| 20 | `context_token_count` | Size and shape | 0.405 | +0.093 | 0.76 | 1/5 | 3/3 | — |
+| 21 | `is_comparison` | Reasoning and multi-hop | 0.403 | +0.097 | 0.76 | 1/5 | 2/3 | +0.030 [-0.060,+0.119] n=49 |
+| 22 | `causal_flag` | Reasoning and multi-hop | 0.402 | +0.091 | 0.76 | 1/5 | 3/3 | +0.054 [-0.032,+0.140] n=62 |
+| 23 | `is_multi_part` | Question structure | 0.396 | -0.079 | 0.78 | 1/5 | 3/3 | -0.086 [-0.171,+0.014] n=34 |
+| 24 | `contains_negation` | Reasoning and multi-hop | 0.392 | +0.085 | 0.78 | 1/5 | 3/3 | +0.046 [-0.028,+0.122] n=96 |
+| 25 | `has_relative_recency` | Temporal constraints | 0.389 | -0.055 | 0.83 | 1/5 | 3/3 | -0.105 [-0.175,-0.024] n=28 * |
+| 26 | `non_ascii_ratio` | Domain and register | 0.378 | -0.081 | 0.78 | 1/5 | 3/3 | — |
+| 27 | `jargon_ratio` | Rarity and vocabulary | 0.357 | +0.076 | 0.78 | 1/5 | 3/3 | — |
+| 28 | `type_token_ratio` | Readability and lexical difficulty | 0.347 | -0.073 | 0.78 | 1/5 | 3/3 | — |
+| 29 | `n_clauses` | Size and shape | 0.339 | +0.069 | 0.78 | 1/5 | 3/3 | — |
+| 30 | `has_file_path` | Retrieval anchors | 0.338 | +0.075 | 0.78 | 0/5 | 3/3 | — |
 
 ## What each one measures
 
@@ -87,22 +87,22 @@ stability; `models` is how many of the 3 point the same way.
 | 12 | `has_escape_option` | higher = more misses | Whether an option is all/none of the above or cannot be determined |
 | 13 | `is_except_ask` | higher = more misses | Whether the question is an except / NOT / least / incorrect item |
 | 14 | `content_word_count` | higher = more misses | How many words carry retrievable content |
-| 15 | `question_category=Math` | this level = fewer misses | Coarse type of the ask, chosen by weighted evidence rather than first-match-wins |
-| 16 | `difficult_word_count` | higher = more misses | How many words are outside the Dale-Chall list of familiar words |
-| 17 | `year_count` | higher = more misses | How many four-digit years the prompt names |
-| 18 | `is_ambiguous` | higher = more misses | Whether the prompt is too underspecified to retrieve for |
-| 19 | `core_question_ratio` | higher = more misses | Share of the prompt that is the actual question, after removing instructions, examples and pasted context |
-| 20 | `is_yes_no_question` | higher = more misses | Whether the prompt is a yes/no question |
-| 21 | `context_token_count` | higher = more misses | Length of the prompt in GPT-style BPE tokens |
-| 22 | `is_comparison` | higher = more misses | Whether the prompt compares two or more things |
-| 23 | `causal_flag` | higher = more misses | Whether the prompt asks about causes or effects |
-| 24 | `temporal_type=range` | this level = more misses | What kind of time constraint the prompt uses |
-| 25 | `is_multi_part` | higher = fewer misses | Whether the prompt asks more than one thing |
-| 26 | `contains_negation` | higher = more misses | Whether the prompt uses a negation word |
-| 27 | `has_relative_recency` | higher = fewer misses | Whether the prompt asks for whatever is newest rather than a fixed date |
-| 28 | `non_ascii_ratio` | higher = fewer misses | Share of characters outside plain ASCII |
-| 29 | `jargon_ratio` | higher = more misses | Share of content words that look like specialist terminology |
-| 30 | `type_token_ratio` | higher = fewer misses | Distinct words divided by total words |
+| 15 | `is_ambiguous` | higher = more misses | Whether the prompt is too underspecified to retrieve for |
+| 16 | `question_category=Math` | this level = fewer misses | Coarse type of the ask, chosen by weighted evidence rather than first-match-wins |
+| 17 | `difficult_word_count` | higher = more misses | How many words are outside the Dale-Chall list of familiar words |
+| 18 | `core_question_ratio` | higher = more misses | Share of the prompt that is the actual question, after removing instructions, examples and pasted context |
+| 19 | `is_yes_no_question` | higher = more misses | Whether the prompt is a yes/no question |
+| 20 | `context_token_count` | higher = more misses | Length of the prompt in GPT-style BPE tokens |
+| 21 | `is_comparison` | higher = more misses | Whether the prompt compares two or more things |
+| 22 | `causal_flag` | higher = more misses | Whether the prompt asks about causes or effects |
+| 23 | `is_multi_part` | higher = fewer misses | Whether the prompt asks more than one thing |
+| 24 | `contains_negation` | higher = more misses | Whether the prompt uses a negation word |
+| 25 | `has_relative_recency` | higher = fewer misses | Whether the prompt asks for whatever is newest rather than a fixed date |
+| 26 | `non_ascii_ratio` | higher = fewer misses | Share of characters outside plain ASCII |
+| 27 | `jargon_ratio` | higher = more misses | Share of content words that look like specialist terminology |
+| 28 | `type_token_ratio` | higher = fewer misses | Distinct words divided by total words |
+| 29 | `n_clauses` | higher = more misses | How many clauses the prompt contains, counted from the dependency parse |
+| 30 | `has_file_path` | higher = more misses | Whether the prompt names a file or path |
 
 ## Reading the list
 
@@ -114,8 +114,8 @@ feature work should go.
 
 **The retrieval headliners competed and lost.** `anchor_count` (retrieval rank 1, here rho=+0.047), `anchor_density` (retrieval rank 2, here rho=-0.025), `unresolved_pronoun_count` (retrieval rank 4, here rho=-0.055), `has_dangling_reference` (retrieval rank 5, here rho=-0.036), `vague_term_count` (retrieval rank 6, here rho=+0.044) — ranks 1, 2, 4, 5 and 6
 of the retrieval Top 30 in `FEATURES.md` — are all screened here and none reaches
-|rho| = 0.06. `is_ambiguous` falls from rank 3 to 18 and
-`context_token_count` from 8 to 21.
+|rho| = 0.06. `is_ambiguous` falls from rank 3 to 15 and
+`context_token_count` from 8 to 20.
 An MMLU-Pro item prints its ten options: there is nothing to retrieve and nothing
 dangling, so the features that measure retrievability have no work to do. Spec mismatch,
 not a bug.
@@ -135,8 +135,8 @@ items fail 42.7% against 19.6%) on **11 questions**, which is why its CI still t
 zero. Sampling 100+ except/NOT items would settle it. Data problem, not a modelling
 problem.
 
-**Churn against the n=1 ranking: 11 of 30 entries are new**
-(`is_definition_ask`, `domain_hint=legal`, `question_category=Math`, `year_count`, `is_yes_no_question`, `is_comparison`, `causal_flag`, `is_multi_part`, `contains_negation`, `has_relative_recency`, `non_ascii_ratio`). Two rankings built from the same
+**Churn against the n=1 ranking: 12 of 30 entries are new**
+(`is_definition_ask`, `domain_hint=legal`, `question_category=Math`, `is_yes_no_question`, `is_comparison`, `causal_flag`, `is_multi_part`, `contains_negation`, `has_relative_recency`, `non_ascii_ratio`, `n_clauses`, `has_file_path`). Two rankings built from the same
 280 questions disagree on a third of their entries — a direct measure of how unstable any
 ranking is at this n.
 
@@ -146,12 +146,13 @@ ranking is at this n.
 - Rarity and vocabulary — 4
 - Reasoning and multi-hop — 4
 - Question structure — 3
+- Size and shape — 3
 - Domain and register — 3
 - Readability and lexical difficulty — 3
-- Temporal constraints — 3
-- Size and shape — 2
 - Ambiguity and underspecification — 1
 - Prompt-engineering artifacts — 1
+- Temporal constraints — 1
+- Retrieval anchors — 1
 
 ## Files
 

@@ -59,7 +59,7 @@
     {
       "feature": "f_domain_hint=legal",
       "spearman": 0.14735247287356762,
-      "q": 0.377576330930536,
+      "q": 0.3775763309305359,
       "significant": false
     },
     {
@@ -113,73 +113,73 @@
     {
       "feature": "f_is_ambiguous",
       "spearman": 0.10428880970160412,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_question_length_chars",
       "spearman": 0.10251477641339374,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_core_question_ratio",
       "spearman": 0.10214349299554304,
-      "q": 0.7077501191808926,
-      "significant": false
-    },
-    {
-      "feature": "f_year_count",
-      "spearman": 0.10123645864292789,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_is_except_ask",
       "spearman": 0.09971710919682769,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_difficult_word_count",
       "spearman": 0.09878387698352563,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_is_comparison",
       "spearman": 0.0973725254116787,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_question_category=Math",
       "spearman": -0.09354720830305922,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_context_token_count",
       "spearman": 0.09331754947166612,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_causal_flag",
       "spearman": 0.09143248832137171,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_is_yes_no_question",
       "spearman": 0.0883912471904459,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
       "significant": false
     },
     {
       "feature": "f_negation_count",
       "spearman": 0.08836498408220998,
-      "q": 0.7077501191808926,
+      "q": 0.7601760539350328,
+      "significant": false
+    },
+    {
+      "feature": "f_question_length_words",
+      "spearman": 0.08706625449805273,
+      "q": 0.7601760539350328,
       "significant": false
     }
   ],
@@ -208,14 +208,14 @@
     "f_rare_word_count": 3,
     "f_oov_like_count": 3,
     "f_is_best_answer_judgment": 3,
-    "f_year_count": 2,
     "f_has_escape_option": 2,
+    "f_is_ambiguous": 2,
     "f_difficult_word_count": 2,
     "f_content_word_count": 2,
     "f_question_category=Math": 2,
     "f_is_except_ask": 2,
-    "f_temporal_type=range": 1,
     "f_is_comparison": 1,
+    "f_multi_need_score": 1,
     "f_jargon_ratio": 1,
     "f_rare_word_ratio": 1,
     "f_context_token_count": 1,
@@ -225,6 +225,7 @@
     "f_contains_negation": 1,
     "f_entity_person_count": 1,
     "f_type_token_ratio": 1,
+    "f_n_sentences": 1,
     "f_core_question_ratio": 1,
     "f_has_relative_recency": 1,
     "f_is_hypothetical_scenario": 1,
@@ -232,7 +233,6 @@
     "f_is_multi_part": 1,
     "f_is_yes_no_question": 1,
     "f_gunning_fog": 1,
-    "f_is_ambiguous": 1,
     "f_causal_flag": 1
   },
   "fold_selections": [
@@ -250,8 +250,8 @@
       "f_aggregation_flag",
       "f_question_type=other",
       "f_quoted_span_word_count",
-      "f_year_count",
-      "f_rare_word_count"
+      "f_rare_word_count",
+      "f_is_yes_no_question"
     ],
     [
       "f_min_word_zipf",
@@ -302,7 +302,7 @@
       "f_question_category=Fact Retrieval",
       "f_question_category=Comparison",
       "f_stem_word_count",
-      "f_year_count"
+      "f_has_relative_recency"
     ],
     [
       "f_max_word_len",
@@ -344,28 +344,28 @@
       "auc": 0.6772544166206648
     },
     "features only": {
-      "brier": 0.17750680317067286,
-      "log_loss": 0.5684429583891543,
-      "auc": 0.4759885546487348
+      "brier": 0.17750888575786397,
+      "log_loss": 0.5706189158520395,
+      "auc": 0.4732936586200671
     },
     "length only": {
       "brier": 0.1643452181838077,
-      "log_loss": 0.5113665647564657,
+      "log_loss": 0.5113665647564656,
       "auc": 0.45627642067718327
     },
     "model x subject + features": {
-      "brier": 0.1781934760442742,
-      "log_loss": 0.5717510135962901,
-      "auc": 0.6005755372660901
+      "brier": 0.17788222561048808,
+      "log_loss": 0.5737597129589286,
+      "auc": 0.5988293768189896
     },
     "model x subject + stable features": {
-      "brier": 0.16496220008104612,
-      "log_loss": 0.5255252649005453,
+      "brier": 0.1649622000810462,
+      "log_loss": 0.5255252649005454,
       "auc": 0.6450948022508077
     }
   },
   "permutation_null_brier": {
-    "mean": 0.16095456460923072,
-    "p5": 0.15558005233873276
+    "mean": 0.16095456460923083,
+    "p5": 0.1555800523387338
   }
 }
