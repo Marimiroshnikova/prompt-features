@@ -1,0 +1,1462 @@
+{
+  "n_rows": 840,
+  "n_questions": 280,
+  "n_models": 3,
+  "fail_rate": 0.205,
+  "binary_positive_rate": 0.18571428571428572,
+  "share_cells_all_wrong": 0.11666666666666667,
+  "share_cells_between": 0.22142857142857142,
+  "binary_rule": "1 if fail_rate > 0.5 else 0",
+  "n_features": 144,
+  "dropped_constant": [
+    "f_is_readability_reliable",
+    "f_ends_with_question_mark",
+    "f_has_url",
+    "f_has_email",
+    "f_emoji_count",
+    "f_has_few_shot_examples",
+    "f_few_shot_example_count",
+    "f_prompt_contains_system_instructions",
+    "f_has_role_prompt",
+    "f_has_context_block",
+    "f_context_block_char_ratio",
+    "f_missing_subject_flag",
+    "is_preview",
+    "is_open_source",
+    "has_custom_tools",
+    "context_window_tokens",
+    "max_tokens_requested",
+    "output_token_limit",
+    "temperature",
+    "top_p",
+    "f_output_pressure"
+  ],
+  "categoricals": [
+    "llm_model",
+    "f_question_type",
+    "f_question_type_secondary",
+    "f_primary_task_verb",
+    "f_temporal_type",
+    "f_question_category",
+    "f_domain_hint",
+    "f_language_code",
+    "f_output_format",
+    "model_family"
+  ],
+  "folds": 5,
+  "results": [
+    {
+      "model": "base rate",
+      "brier": 0.16319602997448981,
+      "brier_base_rate_constant": 0.162975,
+      "bss": -0.0013562201226555715,
+      "bss_vs_oof_base": 0.0,
+      "log_loss": 0.5079312567440645,
+      "ece_15_quantile": 0.04410714285714284,
+      "rmse_vs_soft": 0.3567122776441944,
+      "rmse_noise_floor": 0.05996030432909839,
+      "aurc": 0.22030981717850365,
+      "risk_at_coverage_90": 0.20939153439153438,
+      "risk_at_coverage_80": 0.2125,
+      "risk_at_coverage_70": 0.21785714285714286,
+      "coverage_at_risk_0.15": 0.0035714285714285713,
+      "coverage_at_risk_0.10": 0.0035714285714285713,
+      "auroc": 0.46063877642825013,
+      "auprc": 0.1705191798941799,
+      "auprc_base_rate": 0.18571428571428572,
+      "coverage_grid": [
+        0.05,
+        0.0975,
+        0.145,
+        0.1925,
+        0.24,
+        0.2875,
+        0.335,
+        0.3825,
+        0.43,
+        0.4775,
+        0.525,
+        0.5725,
+        0.62,
+        0.6675,
+        0.715,
+        0.7625,
+        0.81,
+        0.8575,
+        0.905,
+        0.9525,
+        1.0
+      ],
+      "selective_risk": [
+        0.3,
+        0.2183,
+        0.2369,
+        0.2228,
+        0.2163,
+        0.2169,
+        0.2113,
+        0.2183,
+        0.2296,
+        0.2221,
+        0.2249,
+        0.2227,
+        0.2198,
+        0.2189,
+        0.2218,
+        0.2153,
+        0.2113,
+        0.2147,
+        0.2087,
+        0.203,
+        0.205
+      ],
+      "reliability": [
+        {
+          "pred": 0.20059523809523816,
+          "obs": 0.2130952380952381,
+          "n": 84
+        },
+        {
+          "pred": 0.20059523809523816,
+          "obs": 0.23214285714285715,
+          "n": 84
+        },
+        {
+          "pred": 0.20104166666666665,
+          "obs": 0.21904761904761902,
+          "n": 84
+        },
+        {
+          "pred": 0.20104166666666665,
+          "obs": 0.2226190476190476,
+          "n": 84
+        },
+        {
+          "pred": 0.20148809523809522,
+          "obs": 0.26785714285714285,
+          "n": 84
+        },
+        {
+          "pred": 0.20148809523809522,
+          "obs": 0.17023809523809524,
+          "n": 84
+        },
+        {
+          "pred": 0.20937500000000012,
+          "obs": 0.2,
+          "n": 84
+        },
+        {
+          "pred": 0.20937500000000012,
+          "obs": 0.17500000000000002,
+          "n": 84
+        },
+        {
+          "pred": 0.21249999999999988,
+          "obs": 0.18452380952380953,
+          "n": 84
+        },
+        {
+          "pred": 0.21249999999999988,
+          "obs": 0.16547619047619047,
+          "n": 84
+        }
+      ],
+      "pred_hist": [
+        0,
+        0,
+        840,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "model": "binary classifier",
+      "brier": 0.16518309513437587,
+      "brier_base_rate_constant": 0.162975,
+      "bss": -0.013548673933890809,
+      "bss_vs_oof_base": -0.012175940555641418,
+      "log_loss": 0.5158267498393231,
+      "ece_15_quantile": 0.06255436097138695,
+      "rmse_vs_soft": 0.35948673714338186,
+      "rmse_noise_floor": 0.05996030432909839,
+      "aurc": 0.17000928584346342,
+      "risk_at_coverage_90": 0.20052910052910053,
+      "risk_at_coverage_80": 0.1863095238095238,
+      "risk_at_coverage_70": 0.17653061224489797,
+      "coverage_at_risk_0.15": 0.31547619047619047,
+      "coverage_at_risk_0.10": 0.02142857142857143,
+      "auroc": 0.5772370295396612,
+      "auprc": 0.22281172153503473,
+      "auprc_base_rate": 0.18571428571428572,
+      "coverage_grid": [
+        0.05,
+        0.0975,
+        0.145,
+        0.1925,
+        0.24,
+        0.2875,
+        0.335,
+        0.3825,
+        0.43,
+        0.4775,
+        0.525,
+        0.5725,
+        0.62,
+        0.6675,
+        0.715,
+        0.7625,
+        0.81,
+        0.8575,
+        0.905,
+        0.9525,
+        1.0
+      ],
+      "selective_risk": [
+        0.1548,
+        0.1317,
+        0.1623,
+        0.1469,
+        0.1554,
+        0.1504,
+        0.1582,
+        0.1618,
+        0.1633,
+        0.1632,
+        0.1701,
+        0.168,
+        0.1687,
+        0.172,
+        0.1795,
+        0.1817,
+        0.1885,
+        0.1936,
+        0.2007,
+        0.2042,
+        0.205
+      ],
+      "reliability": [
+        {
+          "pred": 0.06468229860599552,
+          "obs": 0.1285714285714286,
+          "n": 84
+        },
+        {
+          "pred": 0.08767372156892504,
+          "obs": 0.18571428571428572,
+          "n": 84
+        },
+        {
+          "pred": 0.10809008023213773,
+          "obs": 0.13690476190476192,
+          "n": 84
+        },
+        {
+          "pred": 0.12586423488599913,
+          "obs": 0.19999999999999996,
+          "n": 84
+        },
+        {
+          "pred": 0.14400602965837433,
+          "obs": 0.16428571428571428,
+          "n": 84
+        },
+        {
+          "pred": 0.16216542997530528,
+          "obs": 0.18571428571428572,
+          "n": 84
+        },
+        {
+          "pred": 0.18749469021956125,
+          "obs": 0.23452380952380952,
+          "n": 84
+        },
+        {
+          "pred": 0.21635002465475173,
+          "obs": 0.2547619047619048,
+          "n": 84
+        },
+        {
+          "pred": 0.2618648863974072,
+          "obs": 0.31428571428571433,
+          "n": 84
+        },
+        {
+          "pred": 0.3615844285204297,
+          "obs": 0.24523809523809526,
+          "n": 84
+        }
+      ],
+      "pred_hist": [
+        176,
+        403,
+        178,
+        63,
+        12,
+        8,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "model": "soft regressor",
+      "brier": 0.16936311938922274,
+      "brier_base_rate_constant": 0.162975,
+      "bss": -0.03919692829711763,
+      "bss_vs_oof_base": -0.03778945735197681,
+      "log_loss": 0.5267445742652017,
+      "ece_15_quantile": 0.0678033270620619,
+      "rmse_vs_soft": 0.36525434759471626,
+      "rmse_noise_floor": 0.05996030432909839,
+      "aurc": 0.1774094436809107,
+      "risk_at_coverage_90": 0.20224867724867726,
+      "risk_at_coverage_80": 0.19717261904761904,
+      "risk_at_coverage_70": 0.19506802721088434,
+      "coverage_at_risk_0.15": 0.2523809523809524,
+      "coverage_at_risk_0.10": 0.023809523809523808,
+      "auroc": 0.5468023691707903,
+      "auprc": 0.21201080628256033,
+      "auprc_base_rate": 0.18571428571428572,
+      "coverage_grid": [
+        0.05,
+        0.0975,
+        0.145,
+        0.1925,
+        0.24,
+        0.2875,
+        0.335,
+        0.3825,
+        0.43,
+        0.4775,
+        0.525,
+        0.5725,
+        0.62,
+        0.6675,
+        0.715,
+        0.7625,
+        0.81,
+        0.8575,
+        0.905,
+        0.9525,
+        1.0
+      ],
+      "selective_risk": [
+        0.1786,
+        0.1537,
+        0.1197,
+        0.1432,
+        0.1525,
+        0.1719,
+        0.1652,
+        0.1637,
+        0.1762,
+        0.1674,
+        0.183,
+        0.184,
+        0.1898,
+        0.1918,
+        0.199,
+        0.197,
+        0.1956,
+        0.1985,
+        0.2016,
+        0.2026,
+        0.205
+      ],
+      "reliability": [
+        {
+          "pred": 0.05459201012577285,
+          "obs": 0.15,
+          "n": 84
+        },
+        {
+          "pred": 0.10550866905777227,
+          "obs": 0.1261904761904762,
+          "n": 84
+        },
+        {
+          "pred": 0.13664902631370796,
+          "obs": 0.23333333333333334,
+          "n": 84
+        },
+        {
+          "pred": 0.1626313193922951,
+          "obs": 0.1797619047619048,
+          "n": 84
+        },
+        {
+          "pred": 0.18431957669201351,
+          "obs": 0.17023809523809524,
+          "n": 84
+        },
+        {
+          "pred": 0.21040122973776998,
+          "obs": 0.2702380952380953,
+          "n": 84
+        },
+        {
+          "pred": 0.23795252648137866,
+          "obs": 0.2357142857142857,
+          "n": 84
+        },
+        {
+          "pred": 0.26912888671670643,
+          "obs": 0.21190476190476196,
+          "n": 84
+        },
+        {
+          "pred": 0.316577237986383,
+          "obs": 0.24285714285714283,
+          "n": 84
+        },
+        {
+          "pred": 0.4426146972747076,
+          "obs": 0.22976190476190478,
+          "n": 84
+        }
+      ],
+      "pred_hist": [
+        117,
+        316,
+        260,
+        95,
+        34,
+        16,
+        2,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "model": "binary logistic",
+      "brier": 0.16316959120867447,
+      "brier_base_rate_constant": 0.162975,
+      "bss": -0.001193994224110817,
+      "bss_vs_oof_base": 0.00016200618250017396,
+      "log_loss": 0.5049922045301334,
+      "ece_15_quantile": 0.05303208216174922,
+      "rmse_vs_soft": 0.3566752167677108,
+      "rmse_noise_floor": 0.05996030432909839,
+      "aurc": 0.1514720262631672,
+      "risk_at_coverage_90": 0.19523809523809524,
+      "risk_at_coverage_80": 0.18720238095238095,
+      "risk_at_coverage_70": 0.18095238095238095,
+      "coverage_at_risk_0.15": 0.49404761904761907,
+      "coverage_at_risk_0.10": 0.22857142857142856,
+      "auroc": 0.6129573399310242,
+      "auprc": 0.26029403313564137,
+      "auprc_base_rate": 0.18571428571428572,
+      "coverage_grid": [
+        0.05,
+        0.0975,
+        0.145,
+        0.1925,
+        0.24,
+        0.2875,
+        0.335,
+        0.3825,
+        0.43,
+        0.4775,
+        0.525,
+        0.5725,
+        0.62,
+        0.6675,
+        0.715,
+        0.7625,
+        0.81,
+        0.8575,
+        0.905,
+        0.9525,
+        1.0
+      ],
+      "selective_risk": [
+        0.1,
+        0.0634,
+        0.1041,
+        0.113,
+        0.1188,
+        0.1149,
+        0.1163,
+        0.1335,
+        0.1403,
+        0.1465,
+        0.1553,
+        0.1703,
+        0.1785,
+        0.1766,
+        0.1829,
+        0.1847,
+        0.1866,
+        0.1931,
+        0.1959,
+        0.2021,
+        0.205
+      ],
+      "reliability": [
+        {
+          "pred": 0.08241918228137052,
+          "obs": 0.06190476190476191,
+          "n": 84
+        },
+        {
+          "pred": 0.10883717218397135,
+          "obs": 0.15833333333333333,
+          "n": 84
+        },
+        {
+          "pred": 0.12680952214862512,
+          "obs": 0.1285714285714286,
+          "n": 84
+        },
+        {
+          "pred": 0.14224161754746859,
+          "obs": 0.21071428571428572,
+          "n": 84
+        },
+        {
+          "pred": 0.16002337941081168,
+          "obs": 0.20476190476190476,
+          "n": 84
+        },
+        {
+          "pred": 0.17625470953980799,
+          "obs": 0.2833333333333334,
+          "n": 84
+        },
+        {
+          "pred": 0.19165873738848246,
+          "obs": 0.21904761904761902,
+          "n": 84
+        },
+        {
+          "pred": 0.21147355712361735,
+          "obs": 0.23095238095238094,
+          "n": 84
+        },
+        {
+          "pred": 0.24935043058052864,
+          "obs": 0.2595238095238095,
+          "n": 84
+        },
+        {
+          "pred": 0.4049069851112693,
+          "obs": 0.2928571428571428,
+          "n": 84
+        }
+      ],
+      "pred_hist": [
+        90,
+        496,
+        194,
+        32,
+        12,
+        5,
+        5,
+        0,
+        4,
+        2
+      ]
+    },
+    {
+      "model": "soft logistic",
+      "brier": 0.16221200235829772,
+      "brier_base_rate_constant": 0.162975,
+      "bss": 0.0046816851768817225,
+      "bss_vs_oof_base": 0.006029727661548634,
+      "log_loss": 0.500669944452779,
+      "ece_15_quantile": 0.05942981361782541,
+      "rmse_vs_soft": 0.3553302990260143,
+      "rmse_noise_floor": 0.05996030432909839,
+      "aurc": 0.14483785740683416,
+      "risk_at_coverage_90": 0.19960317460317462,
+      "risk_at_coverage_80": 0.1949404761904762,
+      "risk_at_coverage_70": 0.186734693877551,
+      "coverage_at_risk_0.15": 0.5523809523809524,
+      "coverage_at_risk_0.10": 0.24404761904761904,
+      "auroc": 0.6171090118458539,
+      "auprc": 0.2574335453982639,
+      "auprc_base_rate": 0.18571428571428572,
+      "coverage_grid": [
+        0.05,
+        0.0975,
+        0.145,
+        0.1925,
+        0.24,
+        0.2875,
+        0.335,
+        0.3825,
+        0.43,
+        0.4775,
+        0.525,
+        0.5725,
+        0.62,
+        0.6675,
+        0.715,
+        0.7625,
+        0.81,
+        0.8575,
+        0.905,
+        0.9525,
+        1.0
+      ],
+      "selective_risk": [
+        0.0333,
+        0.0585,
+        0.0689,
+        0.0753,
+        0.097,
+        0.1174,
+        0.1291,
+        0.1335,
+        0.1343,
+        0.1398,
+        0.1454,
+        0.1557,
+        0.1687,
+        0.1829,
+        0.1874,
+        0.1894,
+        0.1959,
+        0.1964,
+        0.2003,
+        0.2019,
+        0.205
+      ],
+      "reliability": [
+        {
+          "pred": 0.10077410539648769,
+          "obs": 0.06904761904761905,
+          "n": 84
+        },
+        {
+          "pred": 0.1304332102487114,
+          "obs": 0.0880952380952381,
+          "n": 84
+        },
+        {
+          "pred": 0.14859735610870514,
+          "obs": 0.19047619047619047,
+          "n": 84
+        },
+        {
+          "pred": 0.16437630260739203,
+          "obs": 0.18452380952380953,
+          "n": 84
+        },
+        {
+          "pred": 0.17978087862460465,
+          "obs": 0.17261904761904762,
+          "n": 84
+        },
+        {
+          "pred": 0.19544978186870254,
+          "obs": 0.28095238095238095,
+          "n": 84
+        },
+        {
+          "pred": 0.21155271916552104,
+          "obs": 0.32142857142857145,
+          "n": 84
+        },
+        {
+          "pred": 0.2310762816582423,
+          "obs": 0.2523809523809524,
+          "n": 84
+        },
+        {
+          "pred": 0.26827836687150725,
+          "obs": 0.2369047619047619,
+          "n": 84
+        },
+        {
+          "pred": 0.4240395436318305,
+          "obs": 0.25357142857142856,
+          "n": 84
+        }
+      ],
+      "pred_hist": [
+        32,
+        454,
+        275,
+        46,
+        19,
+        3,
+        4,
+        3,
+        2,
+        2
+      ]
+    }
+  ],
+  "bootstrap": {
+    "n": 1000,
+    "unit": "question_id",
+    "delta_vs_oof_base": {
+      "binary classifier": {
+        "brier_minus_base": {
+          "mean": 0.0019428307100291659,
+          "lo": -0.004004037666584378,
+          "hi": 0.008230069602412494
+        },
+        "risk80_minus_base_rate": {
+          "mean": -0.018397559523809528,
+          "lo": -0.03426116071428569,
+          "hi": -0.0011874999999999982
+        }
+      },
+      "soft regressor": {
+        "brier_minus_base": {
+          "mean": 0.006103603738458894,
+          "lo": -0.00032385298237659204,
+          "hi": 0.013521829569949425
+        },
+        "risk80_minus_base_rate": {
+          "mean": -0.00793922619047619,
+          "lo": -0.02238169642857144,
+          "hi": 0.006282738095238087
+        }
+      },
+      "binary logistic": {
+        "brier_minus_base": {
+          "mean": 3.1627361457388455e-05,
+          "lo": -0.005442416107641852,
+          "hi": 0.005847182775236778
+        },
+        "risk80_minus_base_rate": {
+          "mean": -0.019069136904761905,
+          "lo": -0.03485863095238095,
+          "hi": -0.0037447916666666745
+        }
+      },
+      "soft logistic": {
+        "brier_minus_base": {
+          "mean": -0.0008863434537448758,
+          "lo": -0.006210130575676236,
+          "hi": 0.004511381631788022
+        },
+        "risk80_minus_base_rate": {
+          "mean": -0.010843690476190477,
+          "lo": -0.02682663690476191,
+          "hi": 0.0034866071428571593
+        }
+      }
+    },
+    "regressor_minus_classifier": {
+      "brier": {
+        "mean": 0.004160773028429728,
+        "lo": -0.0012366354112823502,
+        "hi": 0.010321502790504217
+      },
+      "risk80": {
+        "mean": 0.010458333333333333,
+        "lo": -0.005509672619047627,
+        "hi": 0.027380952380952367
+      }
+    },
+    "soft_logistic_minus_binary_logistic": {
+      "brier": {
+        "mean": -0.0009179708152022641,
+        "lo": -0.0036719352664731494,
+        "hi": 0.0016117359034982508
+      },
+      "risk80": {
+        "mean": 0.008225446428571431,
+        "lo": -0.003273809523809513,
+        "hi": 0.019047619047619035
+      }
+    }
+  },
+  "by_model": [
+    {
+      "llm_model": "gemini-2.5-flash-lite",
+      "predictor": "base rate",
+      "brier": 0.2074414593962585,
+      "risk_at_coverage_80": 0.27901785714285715,
+      "fail_rate": 0.28035714285714286,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-2.5-flash-lite",
+      "predictor": "binary classifier",
+      "brier": 0.20997823507225463,
+      "risk_at_coverage_80": 0.2629464285714286,
+      "fail_rate": 0.28035714285714286,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-2.5-flash-lite",
+      "predictor": "soft regressor",
+      "brier": 0.20740678245968086,
+      "risk_at_coverage_80": 0.2736607142857143,
+      "fail_rate": 0.28035714285714286,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-2.5-flash-lite",
+      "predictor": "binary logistic",
+      "brier": 0.20902493372887893,
+      "risk_at_coverage_80": 0.26651785714285714,
+      "fail_rate": 0.28035714285714286,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-2.5-flash-lite",
+      "predictor": "soft logistic",
+      "brier": 0.20514384603121316,
+      "risk_at_coverage_80": 0.2754464285714286,
+      "fail_rate": 0.28035714285714286,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-3.1-flash-lite",
+      "predictor": "base rate",
+      "brier": 0.16993954613095238,
+      "risk_at_coverage_80": 0.22455357142857144,
+      "fail_rate": 0.21642857142857144,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-3.1-flash-lite",
+      "predictor": "binary classifier",
+      "brier": 0.17597490436531069,
+      "risk_at_coverage_80": 0.20401785714285714,
+      "fail_rate": 0.21642857142857144,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-3.1-flash-lite",
+      "predictor": "soft regressor",
+      "brier": 0.18363919971579365,
+      "risk_at_coverage_80": 0.22142857142857142,
+      "fail_rate": 0.21642857142857144,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-3.1-flash-lite",
+      "predictor": "binary logistic",
+      "brier": 0.1699644779895435,
+      "risk_at_coverage_80": 0.20535714285714285,
+      "fail_rate": 0.21642857142857144,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-3.1-flash-lite",
+      "predictor": "soft logistic",
+      "brier": 0.1695836661660368,
+      "risk_at_coverage_80": 0.21473214285714284,
+      "fail_rate": 0.21642857142857144,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-flash-latest",
+      "predictor": "base rate",
+      "brier": 0.1122070843962585,
+      "risk_at_coverage_80": 0.13392857142857142,
+      "fail_rate": 0.11821428571428572,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-flash-latest",
+      "predictor": "binary classifier",
+      "brier": 0.1095961459655623,
+      "risk_at_coverage_80": 0.11830357142857142,
+      "fail_rate": 0.11821428571428572,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-flash-latest",
+      "predictor": "soft regressor",
+      "brier": 0.11704337599219368,
+      "risk_at_coverage_80": 0.12098214285714286,
+      "fail_rate": 0.11821428571428572,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-flash-latest",
+      "predictor": "binary logistic",
+      "brier": 0.11051936190760095,
+      "risk_at_coverage_80": 0.10446428571428572,
+      "fail_rate": 0.11821428571428572,
+      "n_questions": 280
+    },
+    {
+      "llm_model": "gemini-flash-latest",
+      "predictor": "soft logistic",
+      "brier": 0.11190849487764325,
+      "risk_at_coverage_80": 0.11294642857142857,
+      "fail_rate": 0.11821428571428572,
+      "n_questions": 280
+    }
+  ],
+  "by_subject": [
+    {
+      "subject": "biology",
+      "predictor": "base rate",
+      "brier": 0.08812626000921202,
+      "risk_at_coverage_80": 0.05416666666666667,
+      "fail_rate": 0.07833333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "biology",
+      "predictor": "binary classifier",
+      "brier": 0.08431427857384838,
+      "risk_at_coverage_80": 0.08333333333333333,
+      "fail_rate": 0.07833333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "biology",
+      "predictor": "soft regressor",
+      "brier": 0.09992427343450581,
+      "risk_at_coverage_80": 0.08333333333333333,
+      "fail_rate": 0.07833333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "biology",
+      "predictor": "binary logistic",
+      "brier": 0.09562133812456443,
+      "risk_at_coverage_80": 0.0875,
+      "fail_rate": 0.07833333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "biology",
+      "predictor": "soft logistic",
+      "brier": 0.09878687322866948,
+      "risk_at_coverage_80": 0.08541666666666667,
+      "fail_rate": 0.07833333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "business",
+      "predictor": "base rate",
+      "brier": 0.158629721159297,
+      "risk_at_coverage_80": 0.22291666666666668,
+      "fail_rate": 0.19666666666666666,
+      "n_questions": 20
+    },
+    {
+      "subject": "business",
+      "predictor": "binary classifier",
+      "brier": 0.15270450088733814,
+      "risk_at_coverage_80": 0.18125,
+      "fail_rate": 0.19666666666666666,
+      "n_questions": 20
+    },
+    {
+      "subject": "business",
+      "predictor": "soft regressor",
+      "brier": 0.14000862924252472,
+      "risk_at_coverage_80": 0.13958333333333334,
+      "fail_rate": 0.19666666666666666,
+      "n_questions": 20
+    },
+    {
+      "subject": "business",
+      "predictor": "binary logistic",
+      "brier": 0.14874380317628288,
+      "risk_at_coverage_80": 0.1375,
+      "fail_rate": 0.19666666666666666,
+      "n_questions": 20
+    },
+    {
+      "subject": "business",
+      "predictor": "soft logistic",
+      "brier": 0.14998732678833926,
+      "risk_at_coverage_80": 0.13958333333333334,
+      "fail_rate": 0.19666666666666666,
+      "n_questions": 20
+    },
+    {
+      "subject": "chemistry",
+      "predictor": "base rate",
+      "brier": 0.15898206978103738,
+      "risk_at_coverage_80": 0.23958333333333334,
+      "fail_rate": 0.19833333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "chemistry",
+      "predictor": "binary classifier",
+      "brier": 0.15762247555558187,
+      "risk_at_coverage_80": 0.18541666666666667,
+      "fail_rate": 0.19833333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "chemistry",
+      "predictor": "soft regressor",
+      "brier": 0.17012857420573424,
+      "risk_at_coverage_80": 0.23958333333333334,
+      "fail_rate": 0.19833333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "chemistry",
+      "predictor": "binary logistic",
+      "brier": 0.16186362832961604,
+      "risk_at_coverage_80": 0.18541666666666667,
+      "fail_rate": 0.19833333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "chemistry",
+      "predictor": "soft logistic",
+      "brier": 0.16187636725933585,
+      "risk_at_coverage_80": 0.22291666666666668,
+      "fail_rate": 0.19833333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "computer science",
+      "predictor": "base rate",
+      "brier": 0.19087753441220234,
+      "risk_at_coverage_80": 0.25833333333333336,
+      "fail_rate": 0.25166666666666665,
+      "n_questions": 20
+    },
+    {
+      "subject": "computer science",
+      "predictor": "binary classifier",
+      "brier": 0.17708296600978155,
+      "risk_at_coverage_80": 0.22708333333333333,
+      "fail_rate": 0.25166666666666665,
+      "n_questions": 20
+    },
+    {
+      "subject": "computer science",
+      "predictor": "soft regressor",
+      "brier": 0.1691107717005085,
+      "risk_at_coverage_80": 0.21458333333333332,
+      "fail_rate": 0.25166666666666665,
+      "n_questions": 20
+    },
+    {
+      "subject": "computer science",
+      "predictor": "binary logistic",
+      "brier": 0.18155379787788797,
+      "risk_at_coverage_80": 0.19791666666666666,
+      "fail_rate": 0.25166666666666665,
+      "n_questions": 20
+    },
+    {
+      "subject": "computer science",
+      "predictor": "soft logistic",
+      "brier": 0.18261594313640528,
+      "risk_at_coverage_80": 0.20833333333333334,
+      "fail_rate": 0.25166666666666665,
+      "n_questions": 20
+    },
+    {
+      "subject": "economics",
+      "predictor": "base rate",
+      "brier": 0.08293605508609696,
+      "risk_at_coverage_80": 0.05625,
+      "fail_rate": 0.07,
+      "n_questions": 20
+    },
+    {
+      "subject": "economics",
+      "predictor": "binary classifier",
+      "brier": 0.06757545408603803,
+      "risk_at_coverage_80": 0.0375,
+      "fail_rate": 0.07,
+      "n_questions": 20
+    },
+    {
+      "subject": "economics",
+      "predictor": "soft regressor",
+      "brier": 0.07713136223070631,
+      "risk_at_coverage_80": 0.05625,
+      "fail_rate": 0.07,
+      "n_questions": 20
+    },
+    {
+      "subject": "economics",
+      "predictor": "binary logistic",
+      "brier": 0.08240882383023734,
+      "risk_at_coverage_80": 0.08333333333333333,
+      "fail_rate": 0.07,
+      "n_questions": 20
+    },
+    {
+      "subject": "economics",
+      "predictor": "soft logistic",
+      "brier": 0.0820710382063239,
+      "risk_at_coverage_80": 0.07916666666666666,
+      "fail_rate": 0.07,
+      "n_questions": 20
+    },
+    {
+      "subject": "engineering",
+      "predictor": "base rate",
+      "brier": 0.2435586767910289,
+      "risk_at_coverage_80": 0.3729166666666667,
+      "fail_rate": 0.34,
+      "n_questions": 20
+    },
+    {
+      "subject": "engineering",
+      "predictor": "binary classifier",
+      "brier": 0.24935028852397753,
+      "risk_at_coverage_80": 0.3104166666666667,
+      "fail_rate": 0.34,
+      "n_questions": 20
+    },
+    {
+      "subject": "engineering",
+      "predictor": "soft regressor",
+      "brier": 0.2514649791930038,
+      "risk_at_coverage_80": 0.33125,
+      "fail_rate": 0.34,
+      "n_questions": 20
+    },
+    {
+      "subject": "engineering",
+      "predictor": "binary logistic",
+      "brier": 0.2534595771350075,
+      "risk_at_coverage_80": 0.375,
+      "fail_rate": 0.34,
+      "n_questions": 20
+    },
+    {
+      "subject": "engineering",
+      "predictor": "soft logistic",
+      "brier": 0.24781660465424707,
+      "risk_at_coverage_80": 0.325,
+      "fail_rate": 0.34,
+      "n_questions": 20
+    },
+    {
+      "subject": "health",
+      "predictor": "base rate",
+      "brier": 0.32411894243374434,
+      "risk_at_coverage_80": 0.525,
+      "fail_rate": 0.475,
+      "n_questions": 20
+    },
+    {
+      "subject": "health",
+      "predictor": "binary classifier",
+      "brier": 0.36073032533431926,
+      "risk_at_coverage_80": 0.4895833333333333,
+      "fail_rate": 0.475,
+      "n_questions": 20
+    },
+    {
+      "subject": "health",
+      "predictor": "soft regressor",
+      "brier": 0.33848405941687365,
+      "risk_at_coverage_80": 0.43333333333333335,
+      "fail_rate": 0.475,
+      "n_questions": 20
+    },
+    {
+      "subject": "health",
+      "predictor": "binary logistic",
+      "brier": 0.3457841901032326,
+      "risk_at_coverage_80": 0.525,
+      "fail_rate": 0.475,
+      "n_questions": 20
+    },
+    {
+      "subject": "health",
+      "predictor": "soft logistic",
+      "brier": 0.3345701319720202,
+      "risk_at_coverage_80": 0.5145833333333333,
+      "fail_rate": 0.475,
+      "n_questions": 20
+    },
+    {
+      "subject": "history",
+      "predictor": "base rate",
+      "brier": 0.15743412964143993,
+      "risk_at_coverage_80": 0.23958333333333334,
+      "fail_rate": 0.195,
+      "n_questions": 20
+    },
+    {
+      "subject": "history",
+      "predictor": "binary classifier",
+      "brier": 0.18342696547563306,
+      "risk_at_coverage_80": 0.23541666666666666,
+      "fail_rate": 0.195,
+      "n_questions": 20
+    },
+    {
+      "subject": "history",
+      "predictor": "soft regressor",
+      "brier": 0.1896156293736978,
+      "risk_at_coverage_80": 0.20416666666666666,
+      "fail_rate": 0.195,
+      "n_questions": 20
+    },
+    {
+      "subject": "history",
+      "predictor": "binary logistic",
+      "brier": 0.16304497681213906,
+      "risk_at_coverage_80": 0.16666666666666666,
+      "fail_rate": 0.195,
+      "n_questions": 20
+    },
+    {
+      "subject": "history",
+      "predictor": "soft logistic",
+      "brier": 0.16151977905831744,
+      "risk_at_coverage_80": 0.16666666666666666,
+      "fail_rate": 0.195,
+      "n_questions": 20
+    },
+    {
+      "subject": "law",
+      "predictor": "base rate",
+      "brier": 0.2809752327363237,
+      "risk_at_coverage_80": 0.38958333333333334,
+      "fail_rate": 0.405,
+      "n_questions": 20
+    },
+    {
+      "subject": "law",
+      "predictor": "binary classifier",
+      "brier": 0.2881398251205819,
+      "risk_at_coverage_80": 0.41041666666666665,
+      "fail_rate": 0.405,
+      "n_questions": 20
+    },
+    {
+      "subject": "law",
+      "predictor": "soft regressor",
+      "brier": 0.2941267543098708,
+      "risk_at_coverage_80": 0.44166666666666665,
+      "fail_rate": 0.405,
+      "n_questions": 20
+    },
+    {
+      "subject": "law",
+      "predictor": "binary logistic",
+      "brier": 0.2639021584744009,
+      "risk_at_coverage_80": 0.34375,
+      "fail_rate": 0.405,
+      "n_questions": 20
+    },
+    {
+      "subject": "law",
+      "predictor": "soft logistic",
+      "brier": 0.2610290495062134,
+      "risk_at_coverage_80": 0.35,
+      "fail_rate": 0.405,
+      "n_questions": 20
+    },
+    {
+      "subject": "math",
+      "predictor": "base rate",
+      "brier": 0.08555128392502834,
+      "risk_at_coverage_80": 0.08958333333333333,
+      "fail_rate": 0.07333333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "math",
+      "predictor": "binary classifier",
+      "brier": 0.07070010986191645,
+      "risk_at_coverage_80": 0.08958333333333333,
+      "fail_rate": 0.07333333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "math",
+      "predictor": "soft regressor",
+      "brier": 0.07946431700472084,
+      "risk_at_coverage_80": 0.0875,
+      "fail_rate": 0.07333333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "math",
+      "predictor": "binary logistic",
+      "brier": 0.07753772787076563,
+      "risk_at_coverage_80": 0.06041666666666667,
+      "fail_rate": 0.07333333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "math",
+      "predictor": "soft logistic",
+      "brier": 0.07959023851892204,
+      "risk_at_coverage_80": 0.08333333333333333,
+      "fail_rate": 0.07333333333333333,
+      "n_questions": 20
+    },
+    {
+      "subject": "other",
+      "predictor": "base rate",
+      "brier": 0.11485510669111397,
+      "risk_at_coverage_80": 0.11875,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "other",
+      "predictor": "binary classifier",
+      "brier": 0.11436343333534045,
+      "risk_at_coverage_80": 0.10833333333333334,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "other",
+      "predictor": "soft regressor",
+      "brier": 0.12812609660636157,
+      "risk_at_coverage_80": 0.12916666666666668,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "other",
+      "predictor": "binary logistic",
+      "brier": 0.12406980501828893,
+      "risk_at_coverage_80": 0.11458333333333333,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "other",
+      "predictor": "soft logistic",
+      "brier": 0.1275791435578628,
+      "risk_at_coverage_80": 0.12083333333333333,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "philosophy",
+      "predictor": "base rate",
+      "brier": 0.1146966256554705,
+      "risk_at_coverage_80": 0.12708333333333333,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "philosophy",
+      "predictor": "binary classifier",
+      "brier": 0.11307378040938017,
+      "risk_at_coverage_80": 0.11875,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "philosophy",
+      "predictor": "soft regressor",
+      "brier": 0.11720556083320384,
+      "risk_at_coverage_80": 0.11666666666666667,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "philosophy",
+      "predictor": "binary logistic",
+      "brier": 0.10977076419056052,
+      "risk_at_coverage_80": 0.1125,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "philosophy",
+      "predictor": "soft logistic",
+      "brier": 0.11128523221497227,
+      "risk_at_coverage_80": 0.12291666666666666,
+      "fail_rate": 0.12333333333333334,
+      "n_questions": 20
+    },
+    {
+      "subject": "physics",
+      "predictor": "base rate",
+      "brier": 0.10913028805272108,
+      "risk_at_coverage_80": 0.06041666666666667,
+      "fail_rate": 0.115,
+      "n_questions": 20
+    },
+    {
+      "subject": "physics",
+      "predictor": "binary classifier",
+      "brier": 0.10946615017106813,
+      "risk_at_coverage_80": 0.11458333333333333,
+      "fail_rate": 0.115,
+      "n_questions": 20
+    },
+    {
+      "subject": "physics",
+      "predictor": "soft regressor",
+      "brier": 0.12582822306650376,
+      "risk_at_coverage_80": 0.10833333333333334,
+      "fail_rate": 0.115,
+      "n_questions": 20
+    },
+    {
+      "subject": "physics",
+      "predictor": "binary logistic",
+      "brier": 0.09970654117396674,
+      "risk_at_coverage_80": 0.1125,
+      "fail_rate": 0.115,
+      "n_questions": 20
+    },
+    {
+      "subject": "physics",
+      "predictor": "soft logistic",
+      "brier": 0.10138764562150751,
+      "risk_at_coverage_80": 0.09166666666666666,
+      "fail_rate": 0.115,
+      "n_questions": 20
+    },
+    {
+      "subject": "psychology",
+      "predictor": "base rate",
+      "brier": 0.1748724932681406,
+      "risk_at_coverage_80": 0.23541666666666666,
+      "fail_rate": 0.225,
+      "n_questions": 20
+    },
+    {
+      "subject": "psychology",
+      "predictor": "binary classifier",
+      "brier": 0.1840127785364573,
+      "risk_at_coverage_80": 0.21875,
+      "fail_rate": 0.225,
+      "n_questions": 20
+    },
+    {
+      "subject": "psychology",
+      "predictor": "soft regressor",
+      "brier": 0.1904644408309028,
+      "risk_at_coverage_80": 0.25,
+      "fail_rate": 0.225,
+      "n_questions": 20
+    },
+    {
+      "subject": "psychology",
+      "predictor": "binary logistic",
+      "brier": 0.1769071448044918,
+      "risk_at_coverage_80": 0.21875,
+      "fail_rate": 0.225,
+      "n_questions": 20
+    },
+    {
+      "subject": "psychology",
+      "predictor": "soft logistic",
+      "brier": 0.17085265929303162,
+      "risk_at_coverage_80": 0.21875,
+      "fail_rate": 0.225,
+      "n_questions": 20
+    }
+  ],
+  "note": "Test label is the same 10 trials. Split-half reliability of this label is 0.975, so a fresh 20-30 sample was not collected. No sealed holdout: 280 questions, no feature selection."
+}

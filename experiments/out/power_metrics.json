@@ -1,0 +1,177 @@
+{
+  "n_questions_now": 280,
+  "n_features_tested": 131,
+  "alpha": 0.05,
+  "power": 0.8,
+  "rule": "one true feature among m; BH then reduces to alpha / m",
+  "observed_max_rho": 0.1649488204326224,
+  "observed_top10": [
+    {
+      "feature": "f_max_word_len",
+      "rho": 0.1649488204326224
+    },
+    {
+      "feature": "f_is_definition_ask",
+      "rho": -0.15252277347979587
+    },
+    {
+      "feature": "f_min_word_zipf",
+      "rho": -0.15232543557464973
+    },
+    {
+      "feature": "f_aggregation_flag",
+      "rho": 0.13557458235213285
+    },
+    {
+      "feature": "f_rare_word_count",
+      "rho": 0.13409876692756165
+    },
+    {
+      "feature": "f_stem_word_count",
+      "rho": 0.13397484091651193
+    },
+    {
+      "feature": "f_is_long_scenario",
+      "rho": 0.13359723359427877
+    },
+    {
+      "feature": "f_is_best_answer_judgment",
+      "rho": 0.12685779252741605
+    },
+    {
+      "feature": "f_oov_like_count",
+      "rho": 0.12152097224517759
+    },
+    {
+      "feature": "f_has_escape_option",
+      "rho": 0.1187042993419695
+    }
+  ],
+  "null_max_rho": {
+    "median": 0.15287774273362054,
+    "p95": 0.19691963818273586,
+    "share_at_or_above_observed": 0.336
+  },
+  "stability": [
+    {
+      "n": 100,
+      "top10_overlap_mean": 0.245,
+      "max_rho_median": 0.29578274630411583,
+      "threshold": 0.34842449816491644
+    },
+    {
+      "n": 150,
+      "top10_overlap_mean": 0.309,
+      "max_rho_median": 0.26142440574491876,
+      "threshold": 0.28635259184973816
+    },
+    {
+      "n": 200,
+      "top10_overlap_mean": 0.35400000000000004,
+      "max_rho_median": 0.2485075977198164,
+      "threshold": 0.24879333271000686
+    },
+    {
+      "n": 280,
+      "top10_overlap_mean": 0.414,
+      "max_rho_median": 0.23377906424779044,
+      "threshold": 0.21085034361276322
+    }
+  ],
+  "sizes": [
+    {
+      "n_questions": 280,
+      "rho_threshold": 0.21085034361276322,
+      "power_at_observed_rho": 0.2171573721487553,
+      "cost_usd_total": 8.360352,
+      "cost_usd_new_questions_only": 0.0,
+      "calls": 10920
+    },
+    {
+      "n_questions": 500,
+      "rho_threshold": 0.15826360622386237,
+      "power_at_observed_rho": 0.5630687445509044,
+      "cost_usd_total": 14.929200000000002,
+      "cost_usd_new_questions_only": 6.568848000000001,
+      "calls": 19500
+    },
+    {
+      "n_questions": 1000,
+      "rho_threshold": 0.1121237752567773,
+      "power_at_observed_rho": 0.9557995950217276,
+      "cost_usd_total": 29.858400000000003,
+      "cost_usd_new_questions_only": 21.498048000000004,
+      "calls": 39000
+    },
+    {
+      "n_questions": 1500,
+      "rho_threshold": 0.091606999186621,
+      "power_at_observed_rho": 0.9980643080768399,
+      "cost_usd_total": 44.787600000000005,
+      "cost_usd_new_questions_only": 36.427248,
+      "calls": 58500
+    },
+    {
+      "n_questions": 2000,
+      "rho_threshold": 0.07935923180721607,
+      "power_at_observed_rho": 0.9999491978278244,
+      "cost_usd_total": 59.716800000000006,
+      "cost_usd_new_questions_only": 51.35644800000001,
+      "calls": 78000
+    },
+    {
+      "n_questions": 3000,
+      "rho_threshold": 0.06481714710035,
+      "power_at_observed_rho": 0.9999999865824731,
+      "cost_usd_total": 89.57520000000001,
+      "cost_usd_new_questions_only": 81.214848,
+      "calls": 117000
+    }
+  ],
+  "needed_for_power": [
+    {
+      "rho": 0.1,
+      "n_questions": 1921
+    },
+    {
+      "rho": 0.15,
+      "n_questions": 849
+    },
+    {
+      "rho": 0.165,
+      "n_questions": 700
+    },
+    {
+      "rho": 0.2,
+      "n_questions": 473
+    },
+    {
+      "rho": 0.25,
+      "n_questions": 299
+    }
+  ],
+  "cost_assumptions": {
+    "prices_usd_per_1m": {
+      "gemini-2.5-flash-lite": {
+        "input": 0.1,
+        "output": 0.4
+      },
+      "gemini-3.1-flash-lite": {
+        "input": 0.25,
+        "output": 1.5
+      },
+      "gemini-flash-latest": {
+        "input": 0.75,
+        "output": 3.75
+      }
+    },
+    "tokens_in": 230,
+    "tokens_out": 140,
+    "buffer": 2.2,
+    "trials": 10,
+    "sealed_share": 0.2,
+    "sealed_trials": 25,
+    "cost_per_question_10_trials": 0.022968000000000002,
+    "source": "ai.google.dev/gemini-api/docs/pricing, September 2026; gemini-flash-latest is an alias and can move"
+  }
+}

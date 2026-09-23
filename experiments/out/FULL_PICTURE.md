@@ -48,10 +48,10 @@ Do not say: “the experiment failed.”
 | 1 Pilot data | 200–280 × models × 10 | 280 × 14 × **1** |
 | 2 Features | prompt + model + interaction | Done, plus exam flags |
 | 3 Baselines | global / model / category / model×category / prompt logistic | Done. Model × category wins |
-| 4 Learned models | logistic / trees, H1–H4 | **Not started** — would lose for the same reason |
-| 5 Splits | question / category / model out | Preview done |
-| 6 Metrics | Brier, calibration, coverage–risk | Brier + coverage–risk on 0/1 labels |
-| 7 Scale | 1,500–3,000 questions | **Not started** |
+| 4 Learned models | logistic / trees, H1–H4 | **Done on the 10-trial grid** (3 models): H1 null, nothing beats model × subject. H3 blocked (no config variation). See `PHASE4_6_LOG.md` |
+| 5 Splits | question / category / model out | Done: question-out, subject-out, model-out × question-out |
+| 6 Metrics | Brier, calibration, coverage–risk | **Locked**: rule depends on how the product uses the score |
+| 7 Scale | 1,500–3,000 questions | Not started. Power analysis says ~1,000 questions, ~$21 |
 | 8 Writeup | error analysis + report | Started (examples + exam flags) |
 
 ## What is actually missing (in order)
