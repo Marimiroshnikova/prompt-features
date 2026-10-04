@@ -78,7 +78,7 @@ def build():
                    for i in range(10))
     s.append(page(
         "დავალება 1 · რას გვთხოვდნენ",
-        "H1: რომელი target ჯობია — binary თუ soft?",
+        "H1: რომელი target ჯობია, binary თუ soft?",
         '<p class="center">ერთი კითხვა, ერთი მოდელი, 10 პასუხი:</p>'
         f'<div class="dots">{dots}</div>'
         '<div class="two">'
@@ -100,10 +100,10 @@ def build():
         + num(pct(fail), "პასუხი არასწორი", "bad")
         + '</div>'
         '<div class="two">'
-        + box("Features: 144", ul(["140 — კითხვის ტექსტიდან (სიგრძე, სიტყვები, რიცხვები…)",
-                                   "4 — მოდელზე (სახელი, ოჯახი, knowledge cutoff)"]))
+        + box("Features: 144", ul(["140 კითხვის ტექსტიდან (სიგრძე, სიტყვები, რიცხვები…)",
+                                   "4 მოდელზე (სახელი, ოჯახი, knowledge cutoff)"]))
         + box("გუნდის ნამუშევარი", ul(["2 XGBoost notebook: binary და regression",
-                                       "regression-ის შედეგი: R² 0.32 — კარგად გამოიყურებოდა"]))
+                                       "regression-ის შედეგი: R² 0.32, კარგად გამოიყურებოდა"]))
         + '</div>'))
 
     # 4 problem: leak in notebooks
@@ -131,7 +131,7 @@ def build():
         + '</div><div>'
         + ul(["<b>ერთი და იგივე</b> 144 feature და ერთი და იგივე split",
               "<b>Baseline:</b> ყოველთვის საშუალოს თქმა (20.5%)",
-              "<b>მთავარი მეტრიკა:</b> Brier — რაც დაბალია, მით უკეთესი",
+              "<b>მთავარი მეტრიკა:</b> Brier (რაც დაბალია, მით უკეთესი)",
               "<b>სანდოობა:</b> 95% CI (bootstrap, 1,000-ჯერ)"])
         + '</div></div>'))
 
@@ -181,7 +181,7 @@ def build():
         ps("<p><b>H3:</b> სამივე მოდელს <b>ერთნაირი</b> temperature და context window აქვს → "
            "შესადარებელი არაფერია.</p>",
            "<p><b>Reduced H3:</b> ვამოწმებთ, რაც იცვლება: მოდელის სახელი და knowledge cutoff. "
-           "სრული H3 — როცა მეორე temperature გვექნება.</p>")
+           "სრულ H3-ს გავუშვებთ, როცა მეორე temperature გვექნება.</p>")
         + ps("<p><b>„ახალი მოდელის“ ტესტი</b> საეჭვოდ კარგი იყო: Brier <b>0.130</b>. "
              "იგივე კითხვები სხვა მოდელებით train-ში რჩებოდა (leakage).</p>",
              "<p>test-ში ახლა <b>მოდელიც და მისი კითხვებიც</b> ახალია → Brier "
@@ -202,7 +202,7 @@ def build():
         + '</div><div class="stack">'
         + box("H2 ✓ ცოტათი", "<p>მოდელის features ოდნავ შველის</p>", "good")
         + box("H3 ◐ ნაწილობრივ", "<p>მხოლოდ reduced ვერსია</p>")
-        + box("H4 ✗", "<p>ML ვერ ჯობნის ცხრილს „მოდელი × საგანი“ — სამივე split-ზე</p>", "bad")
+        + box("H4 ✗", "<p>ML ვერ ჯობნის ცხრილს „მოდელი × საგანი“ სამივე split-ზე</p>", "bad")
         + '</div></div>'))
 
     # 10 main problem -> next step
