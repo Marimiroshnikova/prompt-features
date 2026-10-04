@@ -134,6 +134,59 @@ def bar_chart(rows, x_min, x_max, x_label, refs=(), w=860, fmt="{:.3f}", ticks=(
     return "".join(parts)
 
 
+def reliability_svg(rows, color, w=330, h=250, x_label="Predicted risk",
+                    y_label="Observed fail rate"):
+    left, top, size = 56, 12, 190
+    mx = 0.6
+
+    def sx(v):
+        return left + min(v, mx) / mx * size
+
+    def sy(v):
+        return top + (1 - min(v, mx) / mx) * size
+
+    p = [f'<svg viewBox="0 0 {w} {h}" class="chart" role="img">']
+    for t in (0.0, 0.2, 0.4, 0.6):
+        p.append(f'<line x1="{left}" x2="{left + size}" y1="{sy(t):.1f}" y2="{sy(t):.1f}" '
+                 f'stroke="{FAINT}"/>')
+        p.append(f'<text x="{left - 8}" y="{sy(t) + 4:.1f}" text-anchor="end" class="tick">'
+                 f'{t:.1f}</text>')
+        p.append(f'<text x="{sx(t):.1f}" y="{top + size + 18}" text-anchor="middle" class="tick">'
+                 f'{t:.1f}</text>')
+    p.append(f'<line x1="{sx(0)}" y1="{sy(0)}" x2="{sx(mx)}" y2="{sy(mx)}" stroke="{MUTED}" '
+             f'stroke-dasharray="5 5"/>')
+    pts = " ".join(f"{sx(r['pred']):.1f},{sy(r['obs']):.1f}" for r in rows)
+    p.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2"/>')
+    for r in rows:
+        p.append(f'<circle cx="{sx(r["pred"]):.1f}" cy="{sy(r["obs"]):.1f}" r="5" fill="{color}"/>')
+    p.append(f'<text x="{left + size / 2}" y="{top + size + 40}" text-anchor="middle" '
+             f'class="axis">{esc(x_label)}</text>')
+    p.append(f'<text transform="translate(14 {top + size / 2}) rotate(-90)" text-anchor="middle" '
+             f'class="axis">{esc(y_label)}</text>')
+    p.append("</svg>")
+    return "".join(p)
+
+
+def hist_svg(counts, color, w=330, h=80, rest_label="above 0.6"):
+    left, size = 56, 190
+    top = 10
+    peak = max(counts) or 1
+    p = [f'<svg viewBox="0 0 {w} {h}" class="chart" role="img">']
+    shown = counts[:6]  # 0 to 0.6, matching the reliability axis
+    bw = size / len(shown)
+    for k, c in enumerate(shown):
+        bh = c / peak * 50
+        p.append(f'<rect x="{left + k * bw + 2:.1f}" y="{top + 50 - bh:.1f}" width="{bw - 4:.1f}" '
+                 f'height="{bh:.1f}" fill="{color}" opacity="0.55"/>')
+        p.append(f'<text x="{left + (k + 0.5) * bw:.1f}" y="{top + 66}" text-anchor="middle" '
+                 f'class="tick">{c}</text>')
+    rest = sum(counts[6:])
+    p.append(f'<text x="{left + size + 8}" y="{top + 30}" class="tick">'
+             f'{esc(rest_label) + ": " + str(rest) if rest else ""}</text>')
+    p.append("</svg>")
+    return "".join(p)
+
+
 def table(headers, rows, align=None, highlight=None):
     align = align or ["left"] + ["right"] * (len(headers) - 1)
     highlight = highlight or {}
@@ -277,56 +330,6 @@ def build():
         f"and 10% error at {pct(lsoft['coverage_at_risk_0.10'], 0)} (XGBoost: {pct(binr['coverage_at_risk_0.10'], 0)})."))
 
     # 6 reliability
-    def reliability_svg(rows, color, w=330, h=250):
-        left, top, size = 56, 12, 190
-        mx = 0.6
-
-        def sx(v):
-            return left + min(v, mx) / mx * size
-
-        def sy(v):
-            return top + (1 - min(v, mx) / mx) * size
-
-        p = [f'<svg viewBox="0 0 {w} {h}" class="chart" role="img">']
-        for t in (0.0, 0.2, 0.4, 0.6):
-            p.append(f'<line x1="{left}" x2="{left + size}" y1="{sy(t):.1f}" y2="{sy(t):.1f}" '
-                     f'stroke="{FAINT}"/>')
-            p.append(f'<text x="{left - 8}" y="{sy(t) + 4:.1f}" text-anchor="end" class="tick">'
-                     f'{t:.1f}</text>')
-            p.append(f'<text x="{sx(t):.1f}" y="{top + size + 18}" text-anchor="middle" class="tick">'
-                     f'{t:.1f}</text>')
-        p.append(f'<line x1="{sx(0)}" y1="{sy(0)}" x2="{sx(mx)}" y2="{sy(mx)}" stroke="{MUTED}" '
-                 f'stroke-dasharray="5 5"/>')
-        pts = " ".join(f"{sx(r['pred']):.1f},{sy(r['obs']):.1f}" for r in rows)
-        p.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2"/>')
-        for r in rows:
-            p.append(f'<circle cx="{sx(r["pred"]):.1f}" cy="{sy(r["obs"]):.1f}" r="5" fill="{color}"/>')
-        p.append(f'<text x="{left + size / 2}" y="{top + size + 40}" text-anchor="middle" '
-                 f'class="axis">Predicted risk</text>')
-        p.append(f'<text transform="translate(14 {top + size / 2}) rotate(-90)" text-anchor="middle" '
-                 f'class="axis">Observed fail rate</text>')
-        p.append("</svg>")
-        return "".join(p)
-
-    def hist_svg(counts, color, w=330, h=80):
-        left, size = 56, 190
-        top = 10
-        peak = max(counts) or 1
-        p = [f'<svg viewBox="0 0 {w} {h}" class="chart" role="img">']
-        shown = counts[:6]  # 0 to 0.6, matching the reliability axis
-        bw = size / len(shown)
-        for k, c in enumerate(shown):
-            bh = c / peak * 50
-            p.append(f'<rect x="{left + k * bw + 2:.1f}" y="{top + 50 - bh:.1f}" width="{bw - 4:.1f}" '
-                     f'height="{bh:.1f}" fill="{color}" opacity="0.55"/>')
-            p.append(f'<text x="{left + (k + 0.5) * bw:.1f}" y="{top + 66}" text-anchor="middle" '
-                     f'class="tick">{c}</text>')
-        rest = sum(counts[6:])
-        p.append(f'<text x="{left + size + 8}" y="{top + 30}" class="tick">'
-                 f'{"above 0.6: " + str(rest) if rest else ""}</text>')
-        p.append("</svg>")
-        return "".join(p)
-
     rel_blocks = []
     for label, r, color in (("XGBoost binary", binr, ACCENT), ("Logistic soft", lsoft, GOOD)):
         rel_blocks.append(
